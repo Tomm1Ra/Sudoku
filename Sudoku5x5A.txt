@@ -1,0 +1,27 @@
+@ABCDEFGHIJKLMNOPQRSTUVWXY
+
+K 	S 	x	x	P 	x	V 	x	x	I 	E 	x	x	U 	C 	x	T 	x	Q 	G 	x	x	B 	O 	J
+x	x	x	U 	N 	L 	x	x	x	H 	Q 	W 	x	B 	D 	x	J 	x	x	A 	M 	x	K 	E 	I
+x	L 	D 	G 	V 	x	x	K 	x	E 	x	x	O 	x	M 	x	x	W 	x	x	x	x	x	x	x 
+x	C 	x	B 	x	Y 	x	x	x	Q 	L 	F 	G 	x	x	x	P 	x	V 	O 	x	x	x	x	x 
+X 	Q 	x	x	x	W 	x	M 	O 	U 	x	x	x	x	x	x	B 	x	D 	F 	V 	L 	x	x	N
+x	J 	O 	x	x	x	x	x	x	P 	F 	x	x	L 	E 	x	x	x	R 	x	U 	x	x	x	X
+B 	R 	C 	x	x	G 	x	W 	I 	N 	K 	x	x	H 	x	x	L 	Y 	A 	x	x	x	O 	x	x 
+V 	x	x	K 	W 	X 	x	L 	C 	T 	J 	D 	B 	x	x	x	x	x	O 	M 	x	x	Y 	x	x 
+x	Y 	x	I 	x	R 	x	x	U 	S 	N 	x	M 	O 	x	P 	E 	x	x	Q 	x	J 	x	H 	x 
+x	x	H 	T 	x	x	x	x	Q 	x	W 	U 	x	G 	I 	x	x	X 	x	N 	x	x	x	x	x 
+x	x	x	C 	x	x	x	H 	N 	J 	P 	R 	x	T 	G 	B 	x	I 	x	x	x	x	D 	L 	x 
+x	x	G 	x	x	F 	x	x	A 	x	D 	x	x	x	x	x	x	M 	x	S 	E 	N 	P 	x	H
+M 	x	J 	x	x	x	U 	x	x	x	x	Q 	X 	E 	x	x	x	x	C 	x	x	x	A 	x	O
+S 	x	N 	O 	I 	D 	x	G 	x	x	x	x	x	x	L 	x	A 	x	x	H 	x	x	J 	x	x 
+x	B 	Y 	x	x	x	x	S 	x	X 	H 	N 	x	C 	K 	G 	W 	Q 	x	x	x	U 	x	x	x 
+x	x	x	x	x	P 	x	F 	x	x	C 	X 	x	Q 	H 	x	N 	x	x	x	x	O 	U 	x	x 
+x	W 	x	H 	x	C 	x	x	J 	Y 	x	G 	E 	x	V 	U 	K 	x	x	P 	x	B 	x	F 	x 
+x	x	Q 	x	x	U 	B 	x	x	x	x	x	D 	W 	R 	I 	G 	J 	x	Y 	H 	P 	x	x	E
+x	x	P 	x	x	x	X 	N 	W 	x	x	K 	x	x	F 	Q 	H 	C 	x	T 	x	x	I 	D 	M
+Y 	x	x	x	F 	x	I 	x	x	x	A 	S 	x	x	N 	W 	x	x	x	x	x	x	L 	T 	x 
+L 	x	x	M 	B 	T 	K 	x	D 	x	x	x	x	x	x	X 	V 	A 	x	R 	x	x	x	J 	C
+x	x	x	x	x	E 	L 	x	S 	x	x	x	R 	X 	U 	T 	x	x	x	W 	x	H 	x	K 	x 
+x	x	x	x	x	x	x	U 	x	x	G 	x	C 	x	x	F 	x	L 	x	x	T 	X 	M 	R 	x 
+C 	P 	R 	x	T 	V 	x	x	G 	x	M 	L 	x	K 	S 	J 	x	x	x	E 	O 	A 	x	x	x 
+N 	U 	V 	x	x	A 	J 	x	R 	x	T 	H 	x	x	B 	O 	x	x	G 	x	W 	x	x	P 	L

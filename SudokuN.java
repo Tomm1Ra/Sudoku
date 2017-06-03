@@ -21,6 +21,8 @@ public class SudokuN {
     private static ArrayList<TreeSet<Integer>> hakuLista;
     private static int laskuri;
     private static int SIZE;
+    private static ArrayList<String> merkisto;
+    private static boolean omaMerkisto;
     private static HashSet<Integer> rivit;
     private static HashSet<Integer> arvot; 
 
@@ -741,7 +743,6 @@ private static void nakuMonikotRivi(int[][] sudoku) {
     private static TreeSet<Integer> vaihtoehdot(int vaakarivi, int pystyrivi, int[][] sudoku) {
         TreeSet<Integer> ts = new TreeSet<Integer>();
         ts.addAll(arvot);
-
         laskuri++;
         if (sudoku[vaakarivi][pystyrivi] == 0) {
             ts.removeAll(vaakarivi(vaakarivi, sudoku));
@@ -758,24 +759,47 @@ private static void nakuMonikotRivi(int[][] sudoku) {
         System.out.println();
         for(int n=0;n<(SIZE*SIZE*3 + SIZE*2) ;n++) System.out.print("-");
         System.out.println();
-        for (int i = 0; i < SIZE*SIZE; i++) {
-            for (int j = 0; j < SIZE*SIZE; j++) {
-                if (sudoku[i][j] < 10) System.out.print(" "); 
-                if (sudoku[i][j] == 0) 
-                   System.out.print(" .");
-                else 
-                   System.out.print(" "+sudoku[i][j]);
-                if ((j+1)%SIZE==0) System.out.print(" |");
-            }
-            System.out.println();
-            if ((i+1)%SIZE==0) {
-                for(int a = 0 ; a < SIZE; a++) {
-                    for(int b = 0 ; b < SIZE; b++) {
-                        System.out.print("---");
-                    }
-                    System.out.print("-+");
+        if (omaMerkisto) {
+            for (int i = 0; i < SIZE*SIZE; i++) {
+                for (int j = 0; j < SIZE*SIZE; j++) {
+                    if (sudoku[i][j] == 0) 
+                    System.out.print(" . ");
+                    else 
+                    System.out.print(" "+merkisto.get(sudoku[i][j]-1)+" ");
+                    if ((j+1)%SIZE==0) System.out.print(" |");
                 }
                 System.out.println();
+                if ((i+1)%SIZE==0) {
+                    for(int a = 0 ; a < SIZE; a++) {
+                        for(int b = 0 ; b < SIZE; b++) {
+                            System.out.print("---");
+                        }
+                        System.out.print("-+");
+                    }
+                    System.out.println();
+                }
+            }
+
+        } else {
+            for (int i = 0; i < SIZE*SIZE; i++) {
+                for (int j = 0; j < SIZE*SIZE; j++) {
+                    if (sudoku[i][j] < 10) System.out.print(" "); 
+                    if (sudoku[i][j] == 0) 
+                    System.out.print(" .");
+                    else 
+                    System.out.print(" "+sudoku[i][j]);
+                    if ((j+1)%SIZE==0) System.out.print(" |");
+                }
+                System.out.println();
+                if ((i+1)%SIZE==0) {
+                    for(int a = 0 ; a < SIZE; a++) {
+                        for(int b = 0 ; b < SIZE; b++) {
+                            System.out.print("---");
+                        }
+                        System.out.print("-+");
+                    }
+                    System.out.println();
+                }
             }
         }
         
@@ -947,65 +971,94 @@ private static void nakuMonikotRivi(int[][] sudoku) {
             if (SIZE == -1) SIZE = 3;
             System.out.println("SIZE :"+SIZE);
         }
-        int[][] sudoku = new int[SIZE*SIZE][SIZE*SIZE];
         rivit = new HashSet<>();
         arvot = new HashSet<>();
-        for (int i = 0 ; i < SIZE*SIZE; i++) rivit.add(i);
-        for (int i = 1 ; i <= SIZE*SIZE; i++) arvot.add(i);
-        //System.out.println(" " +Arrays.toString(args));
+        
         laskuri = 0;
         String s ="";
         if (args.length == 2 ) {
             try {
                 s = lueLuvut(args[1]);
             } catch(FileNotFoundException e) {
-                 System.out.println("Ei loydy tiedostoa");
+                 System.out.println("Ei loydy tiedostoa " + args[1]);
             }
-        
+        } else if (args.length == 1 ) {
+            try {
+                s = lueLuvut(args[0]);
+            } catch(FileNotFoundException e) {
+                 System.out.println("Ei loydy tiedostoa "+ args[0]);
+            }
+        } else {
+            System.out.println("Anna koko ja/tai sudokutiedoston nimi");
+        }
 
         if (!s.isEmpty()) {
         //System.out.println("Taulu "+s );
-            sudoku = parsiSisalto(s);
-            tulostaSudoku(sudoku);
-            if (!tuplat(sudoku)) {
-                ratkaise(sudoku);
-                System.out.println("\n ** Ratkaisu * "+ laskuri +" * \n");
+            ArrayList<Integer> al  = parsiSisalto(s);
+            SIZE = (int) Math.sqrt(al.size());
+            SIZE = (int) Math.sqrt(SIZE);
+            for (int i = 0 ; i < SIZE*SIZE; i++) rivit.add(i);
+            for (int i = 1 ; i <= SIZE*SIZE; i++) arvot.add(i);
+            System.out.println("SIZE :"+SIZE);
+
+            int[][] sudoku = new int[SIZE*SIZE][SIZE*SIZE];
+            for (int i = 0; i < SIZE*SIZE*SIZE*SIZE; i++) {
+                sudoku[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = (int)al.get(i) ;    
+            }
+            if (!merkisto.isEmpty()) System.out.println("Merkisto: "+ merkisto);
+            if (merkisto.isEmpty() || merkisto.size() == SIZE*SIZE) {
                 tulostaSudoku(sudoku);
-                tarkasta(sudoku);
+                if (!tuplat(sudoku)) {
+                    ratkaise(sudoku);
+                    System.out.println("\n ** Ratkaisu * "+ laskuri +" * \n");
+                    tulostaSudoku(sudoku);
+                    tarkasta(sudoku);
+                } else {
+                    System.out.println("Virheellinen lahtotilanne");
+                }
             } else {
-                System.out.println("Virheellinen lahtotilanne");
+                System.out.println("Virheellinen sudoku tai merkisto");
             }
             
         }
-        } else {
-            System.out.println("Anna sudokutiedoston nimi tai merkkijono");
-        }
+
     }
     
-    public static int[][] parsiSisalto(String sisalto) {
-        int[][] s = new int[SIZE*SIZE][SIZE*SIZE];
-        int lukuja = SIZE*SIZE*SIZE*SIZE;
+    public static ArrayList<Integer> parsiSisalto(String sisalto) {
+        ArrayList<Integer> s = new ArrayList<>();
         sisalto = sisalto.replaceAll("^\\s+", "");
         String[] luvut = sisalto.split("\\s");
+        int lukuja = luvut.length;
          
         if (luvut.length < lukuja) {
-            System.out.println("\n liian pieni tiedosto");
+            System.out.println("\n liian pieni tiedosto " +luvut.length);
             lukuja = luvut.length;
         }
         for (int i = 0; i < lukuja; i++) {
-            int c = Integer.parseInt(luvut[i]);
-            s[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = c ;
+            int c = 0;
+            
+            if (omaMerkisto) {
+                c = merkisto.indexOf(""+luvut[i]) + 1;
+                if (c < 0) c = 0;
+            } else {
+                c = Integer.parseInt(luvut[i]);
+            }
+            s.add(c);
         }
         return s;
     }
     public static String lueLuvut(String tiedosto) throws FileNotFoundException {
         Scanner lukija = new Scanner(new File(tiedosto));
         StringBuilder sisalto = new StringBuilder();
+        StringBuilder merkit = new StringBuilder();
+        merkisto = new ArrayList<>();
         try {
             while (lukija.hasNext()) {
                 String s = lukija.next();
                 if ((s.startsWith("#")) || s.startsWith("!")) {
                     s = lukija.nextLine();
+                } else if (s.startsWith("@"))  {
+                    merkit.append(s);
                 } else {
                     sisalto.append(" ");
                     sisalto.append(s);
@@ -1015,6 +1068,13 @@ private static void nakuMonikotRivi(int[][] sudoku) {
           System.out.println("Virhe: " + e.getMessage());
         } finally {
             if(lukija !=null){lukija.close();}
+        }
+        //System.out.println(" merkit " + merkit.toString());
+        if (merkit.length() != 0) {
+            for(Character c : merkit.toString().toCharArray()) {
+                if (c != '@') merkisto.add(""+c);
+            }
+            if (merkisto.size() >0 ) omaMerkisto = true;
         }
         
         return sisalto.toString();
