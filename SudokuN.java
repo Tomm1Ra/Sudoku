@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 
 public class SudokuN {
@@ -701,7 +703,12 @@ private static void nakuMonikotRivi(int[][] sudoku) {
             }
             for (int a : setti) {
                 if (setti.indexOf(a) != setti.lastIndexOf(a)) {
+                    if (!omaMerkisto) {
                     System.out.println("Tuplanumero " + a + " rivilla " +(i+1));
+                    } else {
+                        System.out.println("Tuplamerkki " + merkisto.get(a-1) + " rivilla " +(i+1));
+                    }
+                
                     tuplia = true;
                 }
             }
@@ -713,7 +720,11 @@ private static void nakuMonikotRivi(int[][] sudoku) {
             }
             for (int a : setti) {
                 if (setti.indexOf(a) != setti.lastIndexOf(a)) {
+                    if (!omaMerkisto) {
                     System.out.println("Tuplanumero " + a + " sarakkeella " +(i+1));
+                    } else {
+                        System.out.println("Tuplamerkki " + merkisto.get(a-1) + " sarakkeella " +(i+1));
+                    }
                     tuplia = true;
                 }
             }
@@ -730,7 +741,11 @@ private static void nakuMonikotRivi(int[][] sudoku) {
             
                 for (int a : setti) {
                     if (setti.indexOf(a) != setti.lastIndexOf(a)) {
-                        System.out.println("Tuplanumero " + a + " ruudussa (" +(i/SIZE*SIZE + j/SIZE +1)+")");
+                        if (!omaMerkisto) {
+                            System.out.println("Tuplanumero " + a + " ruudussa (" +(i/SIZE*SIZE + j/SIZE +1)+")");
+                        } else {
+                            System.out.println("Tuplamerkki " + merkisto.get(a-1) + " ruudussa (" +(i/SIZE*SIZE + j/SIZE +1)+")");
+                        }
                         tuplia = true;
                     }
                 }
@@ -1026,8 +1041,20 @@ private static void nakuMonikotRivi(int[][] sudoku) {
     
     public static ArrayList<Integer> parsiSisalto(String sisalto) {
         ArrayList<Integer> s = new ArrayList<>();
-        sisalto = sisalto.replaceAll("^\\s+", "");
-        String[] luvut = sisalto.split("\\s");
+        ArrayList<String> lukuArray = new ArrayList<>();
+        if (!omaMerkisto) {
+            sisalto = sisalto.replaceAll("^\\s+", "");
+            for (String luku : sisalto.split("\\s")) {
+                lukuArray.add(luku);
+            }
+        } else {
+            sisalto = sisalto.replaceAll("\\s+", "");
+            for (Character c : sisalto.toCharArray()) {
+                lukuArray.add(""+c);
+            }
+        }
+       
+        String[] luvut = lukuArray.stream().toArray(String[]::new);
         int lukuja = luvut.length;
          
         if (luvut.length < lukuja) {
@@ -1041,7 +1068,11 @@ private static void nakuMonikotRivi(int[][] sudoku) {
                 c = merkisto.indexOf(""+luvut[i]) + 1;
                 if (c < 0) c = 0;
             } else {
-                c = Integer.parseInt(luvut[i]);
+                if (Pattern.matches("[0-9]+", luvut[i])) {
+                    c = Integer.parseInt(luvut[i]);
+                } else {
+                    c = 0;
+                }
             }
             s.add(c);
         }

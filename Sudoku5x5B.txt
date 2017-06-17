@@ -1,0 +1,32 @@
+!Sudoku 5x5 kirjaimet A-Y
+@ABCDEFGHIJKLMNOPQRSTUVWXY
+
+----- O--V- PC-N- ---FS HD--T
+GXTJ- -UFA- -E--- -Y--- --R--
+--U-C R---- --TG- A---- -WBFN
+FVI-R -QX-- -SY-B -P--- ----M
+--LD- WBEN- --MU- -C--R --AK-
+
+-H--F I--PY -JR-- -O--B -----
+---W- UDQ-J EM-H- ---C- ----F
+--M-X --S-W ----- U--G- -APE-
+-IV-- -XTC- -U-QA ---W- K--RG
+---C- AGNL- -X--V YT--- -B--D
+
+----M ----- J---N P--Y- -K--I
+----Q KC--R MT--- DBWAG -E--L
+--A-- ---IB HWO-G N-UXE F-DSQ
+----- ----Q --F-C ----L --WM-
+--KV- D---- ---XQ -S--O -J--H
+
+-M--E --Y-- -D-R- FU-I- GCH--
+O---H --JE- SBG-- ---D- XL-WY
+-Q--D HN-F- --CEM --R-- -T--J
+-TRF- ---SX KQ--- W---C EIU--
+NLCA- --KWG I-X-P ----- --F-B
+
+----- LSU-V O--J- T-A-Y ----X
+JR-L- GE-B- -P--S ----V Q-ITW
+XUE-- --C-K YR-LW G---F V--A-
+--F-A -MH-- ----- S---- R-J--
+PB--- Y---- QF--- ----N SMC--

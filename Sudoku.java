@@ -2727,7 +2727,7 @@ private static void uniqueRectangle(int[][] sudoku) {
         try {
             while (lukija.hasNext()) {
                 String s = lukija.next();
-                if ((s.startsWith("#")) || s.startsWith("!")) {
+                if ((s.startsWith("#")) || s.startsWith("!") || s.startsWith("@")) {
                     s = lukija.nextLine();
                 } else {
                     sisalto.append(s);
