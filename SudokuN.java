@@ -270,7 +270,7 @@ public class SudokuN {
         }
     }
 
-private static void nakuMonikotRivi(int[][] sudoku) {
+    private static void nakuMonikotRivi(int[][] sudoku) {
         //System.out.println("Nakurivi " +montako);
         //tulostaVaihtoehdot(sudoku);
         ArrayList<TreeSet<Integer>> mahdolliset = new ArrayList<TreeSet<Integer>>();
@@ -279,7 +279,7 @@ private static void nakuMonikotRivi(int[][] sudoku) {
                  mahdolliset.add(vaihtoehdot(y, x, sudoku));
             }
         }
-        for (int montako = 2 ; montako < 7 ; montako++) {
+        for (int montako = 2 ; montako < Math.min(SIZE*SIZE-SIZE,8) ; montako++) {
             for (int rivi = 0; rivi < SIZE*SIZE; rivi++) {
                 HashSet<Integer> rivinarvot = new HashSet<Integer>();
                 for (int i = 0 ; i < SIZE*SIZE ; i++) {
@@ -396,7 +396,7 @@ private static void nakuMonikotRivi(int[][] sudoku) {
                  mahdolliset.add(vaihtoehdot(y, x, sudoku));
             }
         }
-        for (int montako = 2 ; montako < 7 ; montako++) {
+        for (int montako = 2 ; montako < Math.min(SIZE*SIZE-SIZE,8) ; montako++) {
             for (int sarake = 0; sarake < SIZE*SIZE; sarake++) {
                 HashSet<Integer> rivinarvot = new HashSet<Integer>();
                 for (int i = 0 ; i < SIZE*SIZE ; i++) {
@@ -523,7 +523,7 @@ private static void nakuMonikotRivi(int[][] sudoku) {
                  mahdolliset.add(vaihtoehdot(y, x, sudoku));
             }
         }
-        for (int montako = 2 ; montako < 7 ; montako++) {
+        for (int montako = 2 ; montako < Math.min(SIZE*SIZE-SIZE,8) ; montako++) {
             for ( int rivi = 0 ;rivi < SIZE*SIZE ; rivi=rivi+SIZE) {
                 for ( int sarake = 0 ;sarake < SIZE*SIZE ; sarake=sarake+SIZE) {
                     int vaaka = (rivi/SIZE)*SIZE;
@@ -778,9 +778,9 @@ private static void nakuMonikotRivi(int[][] sudoku) {
             for (int i = 0; i < SIZE*SIZE; i++) {
                 for (int j = 0; j < SIZE*SIZE; j++) {
                     if (sudoku[i][j] == 0) 
-                    System.out.print(" . ");
+                        System.out.print(" . ");
                     else 
-                    System.out.print(" "+merkisto.get(sudoku[i][j]-1)+" ");
+                        System.out.print(" "+merkisto.get(sudoku[i][j]-1)+" ");
                     if ((j+1)%SIZE==0) System.out.print(" |");
                 }
                 System.out.println();
@@ -800,9 +800,9 @@ private static void nakuMonikotRivi(int[][] sudoku) {
                 for (int j = 0; j < SIZE*SIZE; j++) {
                     if (sudoku[i][j] < 10) System.out.print(" "); 
                     if (sudoku[i][j] == 0) 
-                    System.out.print(" .");
+                        System.out.print(" .");
                     else 
-                    System.out.print(" "+sudoku[i][j]);
+                        System.out.print(" "+sudoku[i][j]);
                     if ((j+1)%SIZE==0) System.out.print(" |");
                 }
                 System.out.println();
@@ -821,15 +821,27 @@ private static void nakuMonikotRivi(int[][] sudoku) {
     }
     
     private static void tulostaVaihtoehdot(int[][] sudoku) {
+        System.out.println();
         for (int i = 0; i < SIZE*SIZE; i++) {
             for (int j = 0; j < SIZE*SIZE; j++) {
-                System.out.print(vaihtoehdot(i, j, sudoku));
+                if (!omaMerkisto) {
+                    System.out.print(vaihtoehdot(i, j, sudoku));
+                    
+                } else {
+                    System.out.print("[");
+                    TreeSet<Integer> v= vaihtoehdot(i, j, sudoku);
+                    for (int c : v ) {
+                        System.out.print(merkisto.get(c-1));
+                    }
+                    System.out.print("]");
+                }
                 if ((j+1)%SIZE==0) System.out.print("   ");
             }
             System.out.println();
             if ((i+1)%SIZE==0) System.out.println();
         }
     }
+
     public static int nollia(int[][] sudoku) {
         int paluu = 0;
         for (int y = 0 ; y < SIZE*SIZE ; y++) {
@@ -851,7 +863,6 @@ private static void nakuMonikotRivi(int[][] sudoku) {
     }
     
     private static boolean rekurse(int i, int[][] sudoku) {
-  //System.out.println(i);
         if (i > (SIZE*SIZE*SIZE*SIZE)-1 ) return true;
         if (sudoku[i/(SIZE*SIZE)][i%(SIZE*SIZE)] != 0) {
              return rekurse( i+1,  sudoku );
@@ -924,6 +935,8 @@ private static void nakuMonikotRivi(int[][] sudoku) {
             uusiksi = false;
         while (etsiVarmat(sudoku))  {
             System.out.print("*");
+            //tulostaVaihtoehdot(sudoku);
+            //tulostaSudoku(sudoku);
             uusiksi=true;
         }
         if (nollia(sudoku)!=0) {
@@ -933,7 +946,7 @@ private static void nakuMonikotRivi(int[][] sudoku) {
             nakuMonikotRuutu(sudoku);
             lukitseRivi(sudoku);
             lukitseRuutu(sudoku);
-            for (int montako = 2 ; montako < 8 ; montako++) {
+            for (int montako = 2 ; montako < Math.min(SIZE*SIZE-SIZE,8) ; montako++) {
                 piiloMonikotRivi(montako,sudoku);
                 piiloMonikotSarake(montako,sudoku);
                 piiloMonikotRuutu(montako,sudoku);
@@ -948,8 +961,14 @@ private static void nakuMonikotRivi(int[][] sudoku) {
             tulostaSudoku(sudoku);
             System.out.println("Ratkaistu : " + (SIZE*SIZE*SIZE*SIZE-nollia(sudoku))+"/"+SIZE*SIZE*SIZE*SIZE);
             //tulostaVaihtoehdot(sudoku);
-            System.out.print(" *");
-            rekurse(0, sudoku);
+            if (paikkoja(sudoku) == nollia(sudoku)) {
+                System.out.print(" *");
+                rekurse(0, sudoku);
+            } else {
+                System.out.print(" Mahdotonta! ");
+            }
+
+        
         }
 
     }
