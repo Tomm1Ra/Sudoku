@@ -69,10 +69,8 @@ public class SudokuN {
                     HashSet<Integer> omat = new HashSet<Integer>();
                     for (int sisus = 0 ; sisus < SIZE*SIZE ; sisus ++) {
                         if (sisus >= vertailu*SIZE && sisus < vertailu*SIZE+SIZE) {
-                            //System.out.println(" oma " +((ruutuY+ sisus/SIZE)*SIZE*SIZE+ruutuX+sisus%SIZE));
                             omat.addAll(mahdolliset.get((ruutuY+sisus/SIZE)*SIZE*SIZE+ruutuX+sisus%SIZE));
                         } else {
-                            //System.out.println(" muu " +((ruutuY+sisus/SIZE)*SIZE*SIZE+ruutuX+sisus%SIZE));
                             muut.addAll(mahdolliset.get((ruutuY+sisus/SIZE)*SIZE*SIZE+ruutuX+sisus%SIZE));
                         }
 
@@ -88,6 +86,7 @@ public class SudokuN {
                                     if (sudoku[y][x] == 0 && !estoLista.get(y*SIZE*SIZE+x).contains(luku)) {
                                         //System.out.println("LukitseRuutu " + (y*SIZE*SIZE+x) +" "+luku);   
                                         estoLista.get(y*SIZE*SIZE+x).add(luku);
+                                        mahdolliset.get(y*SIZE*SIZE+x).remove(luku);
                                         paluu = true;
                                     }
                                 }
@@ -105,10 +104,8 @@ public class SudokuN {
                     HashSet<Integer> omat = new HashSet<Integer>();
                     for (int sisus = 0 ; sisus < SIZE*SIZE ; sisus ++) {
                         if (sisus%SIZE == vertailu) {
-                            //System.out.println(" oma " +((ruutuY+ sisus/SIZE)*SIZE*SIZE+ruutuX+sisus%SIZE));
                             omat.addAll(mahdolliset.get((ruutuY+sisus/SIZE)*SIZE*SIZE+ruutuX+sisus%SIZE));
                         } else {
-                            //System.out.println(" muu " +((ruutuY+sisus/SIZE)*SIZE*SIZE+ruutuX+sisus%SIZE));
                             muut.addAll(mahdolliset.get((ruutuY+sisus/SIZE)*SIZE*SIZE+ruutuX+sisus%SIZE));
                         }
 
@@ -124,6 +121,7 @@ public class SudokuN {
                                     if (sudoku[y][x] == 0 && !estoLista.get(y*SIZE*SIZE+x).contains(luku)) {
                                         //System.out.println("LukitsePysty " + (y*SIZE*SIZE+x) +" "+luku);   
                                         estoLista.get(y*SIZE*SIZE+x).add(luku);
+                                        mahdolliset.get(y*SIZE*SIZE+x).remove(luku);
                                         paluu = true;
                                     }
                                 }
@@ -171,6 +169,7 @@ public class SudokuN {
                                     if (sudoku[y][x] == 0 && !estoLista.get(y*SIZE*SIZE+x).contains(luku)) {
                                         //System.out.println("LukitseRivi " + (y*SIZE*SIZE+x) +" "+luku);   
                                         estoLista.get(y*SIZE*SIZE+x).add(luku);
+                                        mahdolliset.get(y*SIZE*SIZE+x).remove(luku);
                                         paluu = true;
                                     }
                                 }
@@ -204,6 +203,7 @@ public class SudokuN {
                                     if (sudoku[y][x] == 0 && !estoLista.get(y*SIZE*SIZE+x).contains(luku)) {
                                         //System.out.println("LukitseSarake " + (y*SIZE*SIZE+x) +" "+luku);   
                                         estoLista.get(y*SIZE*SIZE+x).add(luku);
+                                        mahdolliset.get(y*SIZE*SIZE+x).remove(luku);
                                         paluu = true;
                                     }
                                 }
@@ -267,6 +267,7 @@ public class SudokuN {
                         for (int r : loytyneetpiilopaikat) {
                             if (!estoLista.get(SIZE*SIZE*rivi+r).containsAll(estot)) {
                                 estoLista.get(SIZE*SIZE*rivi+r).addAll(estot);
+                                mahdolliset.get(SIZE*SIZE*rivi+r).removeAll(estot);
                                 paluu = true; 
                             }    
                         }
@@ -285,7 +286,8 @@ public class SudokuN {
                  mahdolliset.add(vaihtoehdot(y, x, sudoku));
             }
         }
-        for (int montako = 2 ; montako < SIZE+2 ; montako++) {
+        for (int montako = 2 ; montako < SIZE*2 ; montako++) {
+            if (paluu && montako > SIZE) return true;
             for (int rivi = 0; rivi < SIZE*SIZE; rivi++) {
                 HashSet<Integer> ruudut = new HashSet<Integer>();
                 for (int i = 0 ; i < SIZE*SIZE ; i++) {
@@ -318,6 +320,7 @@ public class SudokuN {
                                         if (!estoLista.get(SIZE*SIZE*rivi+r).contains(luku)) {
                                             //System.out.println(montako+" EstaR " +(SIZE*SIZE*rivi+r)+" "+(luku));
                                             estoLista.get(SIZE*SIZE*rivi+r).add(luku);
+                                            mahdolliset.get(SIZE*SIZE*rivi+r).remove(luku);
                                             paluu = true; 
                                         }
                                     }
@@ -380,6 +383,7 @@ public class SudokuN {
                         for (int r : loytyneetpaikat) {
                             if (!estoLista.get(SIZE*SIZE*r+sarake).containsAll(estot)) {
                                 estoLista.get(SIZE*SIZE*r + sarake).addAll(estot);
+                                mahdolliset.get(SIZE*SIZE*r + sarake).removeAll(estot);
                                 paluu = true; 
                             }
                         }
@@ -398,7 +402,8 @@ public class SudokuN {
                  mahdolliset.add(vaihtoehdot(y, x, sudoku));
             }
         }
-        for (int montako = 2 ; montako < SIZE+2 ; montako++) {
+        for (int montako = 2 ; montako < SIZE*2 ; montako++) {
+            if (paluu && montako > SIZE) return true;
             for (int sarake = 0; sarake < SIZE*SIZE; sarake++) {
                 HashSet<Integer> ruudut = new HashSet<Integer>();
                 for (int i = 0 ; i < SIZE*SIZE ; i++) {
@@ -431,6 +436,7 @@ public class SudokuN {
                                         if (!estoLista.get(SIZE*SIZE*r+sarake).contains(luku)) {
                                             //System.out.println(montako+" EstaS " +(SIZE*SIZE*r+sarake)+" "+(luku));
                                             estoLista.get(SIZE*SIZE*r+sarake).add(luku);
+                                            mahdolliset.get(SIZE*SIZE*r+sarake).remove(luku);
                                             paluu = true; 
                                         }
                                     }
@@ -484,14 +490,15 @@ public class SudokuN {
                             for (int x = 0 ; x < SIZE ;x++) {
                         
                                 HashSet<Integer> apu = new HashSet<Integer>();
-                                HashSet<Integer> temp = mahdolliset.get((rivi+y)*SIZE*SIZE+sarake+x);
+                                int paikka = (rivi+y)*SIZE*SIZE+sarake+x;
+                                HashSet<Integer> temp = mahdolliset.get(paikka);
                                 
                                 if (!temp.isEmpty()) {
                                     apu.addAll(temp);
                                     apu.removeAll(poisto);
                                     if (!apu.isEmpty()) {
                                         loytynyt++;
-                                        loytyneetpaikat.add(y*SIZE+x);
+                                        loytyneetpaikat.add(paikka);
                                     }
                                 }
                             }
@@ -500,8 +507,10 @@ public class SudokuN {
                             HashSet<Integer> estot = new HashSet<Integer>(arvot);
                             estot.removeAll(ts);
                             for (int r : loytyneetpaikat) {
-                                if (!estoLista.get(9*(rivi+r/3)+sarake+r%3).containsAll(estot)) {
-                                    estoLista.get(9*(rivi+r/3)+sarake+r%3).addAll(estot);
+                                if (!estoLista.get(r).containsAll(estot)) {
+                                    estoLista.get(r).addAll(estot);
+                                    mahdolliset.get(r).removeAll(estot);
+                                    //System.out.println(montako+" EstaPiiloX " +r+" "+estot);
                                     paluu = true; 
                                 }
                             }
@@ -521,7 +530,8 @@ public class SudokuN {
                  mahdolliset.add(vaihtoehdot(y, x, sudoku));
             }
         }
-        for (int montako = 2 ; montako < SIZE+2 ; montako++) {
+        for (int montako = 2 ; montako < SIZE*2 ; montako++) {
+            if (paluu && montako > SIZE) return true;
             for ( int rivi = 0 ;rivi < SIZE*SIZE ; rivi=rivi+SIZE) {
                 for ( int sarake = 0 ;sarake < SIZE*SIZE ; sarake=sarake+SIZE) {
                     int vaaka = (rivi/SIZE)*SIZE;
@@ -564,6 +574,7 @@ public class SudokuN {
                                             if (!estoLista.get(r).contains(luku)) {
                                                 //System.out.println(montako+" nakuMon EstaX " +r+" "+(luku));
                                                 estoLista.get(r).add(luku);
+                                                mahdolliset.get(r).remove(luku);
                                                 paluu = true; 
                                             }
                                             
@@ -965,7 +976,6 @@ public class SudokuN {
             uusiksi = false;
             while (etsiVarmat(sudoku))  {
                 System.out.print("*");
-                uusiksi=true;
             }
             if (nollia(sudoku)!=0) {
                 System.out.print("@");
@@ -976,6 +986,7 @@ public class SudokuN {
                 uusiksi = uusiksi || lukitseRivi(sudoku);
                 uusiksi = uusiksi || lukitseRuutu(sudoku);
                 for (int montako = 2 ; montako < SIZE+2; montako++) {
+                    if (uusiksi && montako > SIZE) continue;
                     uusiksi = uusiksi || piiloMonikotRivi(montako,sudoku);
                     uusiksi = uusiksi || piiloMonikotSarake(montako,sudoku);
                     uusiksi = uusiksi || piiloMonikotRuutu(montako,sudoku);
