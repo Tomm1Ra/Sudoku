@@ -901,7 +901,7 @@ public class Sudoku {
         }
     }    
 
-private static void uniqueRectangle(int[][] sudoku) {
+    private static void uniqueRectangle(int[][] sudoku) {
         //tulostaVaihtoehdot(sudoku);
         ArrayList<Integer> mahdolliset = new ArrayList<Integer>();
         ArrayList<TreeSet<Integer>> kaikkiMahdolliset = new ArrayList<TreeSet<Integer>>();
@@ -1487,30 +1487,28 @@ private static void uniqueRectangle(int[][] sudoku) {
         } 
 
         for (int a = 0 ; a < 79 ; a++) {
-
+            HashSet<Integer> summa = new HashSet<Integer>();
             if (mahdolliset.get(a).isEmpty()) continue;
+            summa.addAll(mahdolliset.get(a));
             for (int b = a+1 ; b < 80 ; b++) {
                 if (mahdolliset.get(b).isEmpty()) continue;
+                summa.addAll(mahdolliset.get(b));
+                if (summa.size() != 3) continue;
                 for (int c = b+1 ; c < 81 ; c++) {
                     if (mahdolliset.get(c).isEmpty()) continue;
-                    TreeSet<Integer> summa = new TreeSet<Integer>();
-                    TreeSet<Integer> haku = new TreeSet<Integer>();
-                    TreeSet<Integer> aa = new TreeSet<Integer>();
-                    haku = mahdolliset.get(a);
-                    aa.addAll(haku);
-                    TreeSet<Integer> bb = new TreeSet<Integer>();
-                    haku = mahdolliset.get(b);
-                    bb.addAll(haku);
-                    TreeSet<Integer> cc = new TreeSet<Integer>();
-                    haku = mahdolliset.get(c);
-                    cc.addAll(haku);
-                    summa.addAll(aa);
-                    summa.addAll(bb);
-                    summa.addAll(cc);
-                    if (summa.size()!=3) continue;
-                    if (aa.first()==bb.first() && aa.last()==bb.last()) continue;
-                    if (aa.first()==cc.first() && aa.last()==cc.last()) continue;
-                    if (cc.first()==bb.first() && cc.last()==bb.last()) continue;
+                    summa.addAll(mahdolliset.get(c));
+                    if (summa.size() != 3) continue;
+
+                    summa.clear();
+                    summa.addAll(mahdolliset.get(c));
+                    summa.addAll(mahdolliset.get(a));
+                    if (summa.size() != 3) continue;
+                    
+                    summa.clear();
+                    summa.addAll(mahdolliset.get(c));
+                    summa.addAll(mahdolliset.get(b));
+                    if (summa.size() != 3) continue;
+
                     if(samaRivi(a, b) && samaRivi(a, c)) continue;
                     if(samaSarake(a, b) && samaSarake(a, c)) continue;
                     if(samaRuutu(a, b) && samaRuutu(a, c)) continue;
@@ -1520,15 +1518,12 @@ private static void uniqueRectangle(int[][] sudoku) {
                     if ((yhteys(a,b)) && (yhteys(a,c))) {
 
                         HashSet<Integer> numerot = new HashSet<>();
-                        numerot.addAll(bb);
-                        numerot.removeAll(aa);
+                        numerot.addAll(mahdolliset.get(b));
+                        numerot.removeAll(mahdolliset.get(a));
                         int yhteinenNumero = (int)numerot.toArray()[0];
-                                //System.out.println(" xwingA "+yhteinenNumero);
-                                //System.out.println(a+" "+b+" "+c );
-                                //System.out.println(aa.toString()+bb.toString()+cc.toString());
-                                //System.out.println(" Esta " + (b/9*9+c%9) +" "+(c/9*9+b%9) +" "+ yhteinenNumero);
-                                estoLista.get(b/9*9+c%9).add(yhteinenNumero);
-                                estoLista.get(c/9*9+b%9).add(yhteinenNumero);
+                        //System.out.println(" Esta " + (b/9*9+c%9) +" "+(c/9*9+b%9) +" "+ yhteinenNumero);
+                        estoLista.get(b/9*9+c%9).add(yhteinenNumero);
+                        estoLista.get(c/9*9+b%9).add(yhteinenNumero);
                         if (samaRuutu(a, b)) {
                             //System.out.println(" xywing ruutu");
                             if (samaRivi(a, c)) {
@@ -1559,19 +1554,16 @@ private static void uniqueRectangle(int[][] sudoku) {
                         }
 
                     }
-                    
+
                     if ((yhteys(b,a)) && (yhteys(b,c))) {
                         HashSet<Integer> numerot = new HashSet<>();
-                        numerot.addAll(aa);
-                        numerot.removeAll(bb);
+                        numerot.addAll(mahdolliset.get(a));
+                        numerot.removeAll(mahdolliset.get(b));
                         int yhteinenNumero = (int)numerot.toArray()[0];
-                                //System.out.println(" xwingB "+yhteinenNumero);
-                                //System.out.println(a+" "+b+" "+c );
-                                //System.out.println(aa.toString()+bb.toString()+cc.toString());
-                                //System.out.println(" Esta " + (c/9*9+a%9) +" "+(a/9*9+c%9) +" "+ yhteinenNumero);
-                                estoLista.get(c/9*9+a%9).add(yhteinenNumero);
-                                estoLista.get(a/9*9+c%9).add(yhteinenNumero);
-                                                    
+                        //System.out.println(" Esta " + (c/9*9+a%9) +" "+(a/9*9+c%9) +" "+ yhteinenNumero);
+                        estoLista.get(c/9*9+a%9).add(yhteinenNumero);
+                        estoLista.get(a/9*9+c%9).add(yhteinenNumero);
+
                         if (samaRuutu(b, a)) {
                             if (samaRivi(b, c)) {
                                 for (int i = 0 ; i < 3 ; i++) {
@@ -1599,19 +1591,14 @@ private static void uniqueRectangle(int[][] sudoku) {
                             }
                         }
                     }
-                                                    
-
                     if ((yhteys(c,a)) && (yhteys(c,b))) {
                         HashSet<Integer> numerot = new HashSet<>();
-                        numerot.addAll(aa);
-                        numerot.removeAll(cc);
+                        numerot.addAll(mahdolliset.get(a));
+                        numerot.removeAll(mahdolliset.get(c));
                         int yhteinenNumero = (int)numerot.toArray()[0];
-                                //System.out.println(" xwingC "+yhteinenNumero);
-                                //System.out.println(a+" "+b+" "+c );
-                                //System.out.println(aa.toString()+bb.toString()+cc.toString());
-                                //System.out.println(" Esta " + (b/9*9+a%9) +" "+(a/9*9+b%9) +" "+ yhteinenNumero);
-                                estoLista.get(b/9*9+a%9).add(yhteinenNumero);
-                                estoLista.get(a/9*9+b%9).add(yhteinenNumero);
+                        //System.out.println(" Esta " + (b/9*9+a%9) +" "+(a/9*9+b%9) +" "+ yhteinenNumero);
+                        estoLista.get(b/9*9+a%9).add(yhteinenNumero);
+                        estoLista.get(a/9*9+b%9).add(yhteinenNumero);
                         if (samaRuutu(c, a)) {
                             if (samaRivi(c, b)) {
                                 for (int i = 0 ; i < 3 ; i++) {
@@ -1642,8 +1629,8 @@ private static void uniqueRectangle(int[][] sudoku) {
                 }
             }
         }
-    
-    } 
+    }
+
     private static void piiloMonikotRivi(int montako,int[][] sudoku) {
         //System.out.println("Piilorivi " +montako);
         //tulostaVaihtoehdot(sudoku);
@@ -1677,16 +1664,16 @@ private static void uniqueRectangle(int[][] sudoku) {
                     int loytynytpiilo = 0;
                     ArrayList<Integer> loytyneetpiilopaikat = new ArrayList<Integer>();
                     for (int sarake = 0 ; sarake < 9 ;sarake++) {
-                        HashSet<Integer> apuPiilo = new HashSet<Integer>();
+                        HashSet<Integer> apu = new HashSet<Integer>();
                         //TreeSet<Integer> apuNaku = new TreeSet<Integer>();
                         TreeSet<Integer> temp = mahdolliset.get(rivi*9+sarake);
                         //apu sisaltaa jonkun ts:sta
 
                         if (!temp.isEmpty()) {
-                            for (int z : temp) apuPiilo.add(z);
+                            apu.addAll(temp);
                             //System.out.println("XX " +apu.toString()+ts.toString());
-                            apuPiilo.removeAll(poisto);
-                             if (!apuPiilo.isEmpty()) {
+                            apu.removeAll(poisto);
+                             if (!apu.isEmpty()) {
                                  loytynytpiilo++;
                                  loytyneetpiilopaikat.add(sarake);
                              }
@@ -1697,7 +1684,9 @@ private static void uniqueRectangle(int[][] sudoku) {
                         estot.removeAll(ts);
                         //System.out.println(montako+" Piilo "+rivi+" "+estot.toString()+ts.toString());
                         for (int r : loytyneetpiilopaikat) {
-                            estoLista.get(9*rivi+r). addAll(estot);    
+                            if (!estoLista.get(9*rivi+r).containsAll(estot)) {
+                                estoLista.get(9*rivi+r). addAll(estot);
+                            }    
                         }
                     }
                 }
@@ -1716,49 +1705,38 @@ private static void uniqueRectangle(int[][] sudoku) {
         }
         for (int montako = 2 ; montako < 5 ; montako++) {
             for (int rivi = 0; rivi < 9; rivi++) {
-                HashSet<Integer> rivinarvot = new HashSet<Integer>();
+                HashSet<Integer> ruudut = new HashSet<Integer>();
                 for (int i = 0 ; i < 9 ; i++) {
-                    rivinarvot.addAll(mahdolliset.get(rivi*9+i));
+                    if (mahdolliset.get(rivi*9+i).size() != 0 && mahdolliset.get(rivi*9+i).size() <= montako ){
+                        ruudut.add(i);
+                    }
                 }
-                if (rivinarvot.size() >= montako) {
-                    Integer kokolista [] = rivinarvot.toArray(new Integer[rivinarvot.size()]);
-                    int lista[] = new int[rivinarvot.size()];
-                    for (int i = 0 ; i < rivinarvot.size(); i++ ) {
+                if (ruudut.size() >= montako) {
+                    Integer kokolista [] = ruudut.toArray(new Integer[ruudut.size()]);
+                    int lista[] = new int[ruudut.size()];
+                    for (int i = 0 ; i < ruudut.size(); i++ ) {
                         lista[i] = kokolista[i];
                     } 
                     int vaihtoehto[] = new int[montako];
                     hakuLista = new ArrayList<TreeSet<Integer>>();
-                    combinationUtil(lista, vaihtoehto, 0, rivinarvot.size()-1, 0, montako);
+                    combinationUtil(lista, vaihtoehto, 0, ruudut.size()-1, 0, montako);
                     //System.out.println(""+hakuLista.toString());
                     for (TreeSet<Integer> ts : hakuLista) {
-                        HashSet<Integer> poisto = new HashSet<Integer>();
-                        poisto.addAll(rivinarvot);
-                        poisto.removeAll(ts);
-                        int loytynyt = 0;
-                        ArrayList<Integer> loytyneetpaikat = new ArrayList<Integer>();
-                        for (int sarake = 0 ; sarake < 9 ;sarake++) {
-                            HashSet<Integer> apu = new HashSet<Integer>();
-                            apu.addAll(mahdolliset.get(rivi*9+sarake));
-                            //apu sisaltaa jonkun ts:sta
-
-                            if (!apu.isEmpty()) {
-                                //System.out.println("XX " +apu.toString()+ts.toString());
-                                apu.removeAll(ts);
-                                 if (apu.isEmpty()) {
-                                     loytynyt++;
-                                     loytyneetpaikat.add(sarake);
-                                 }
-                            }
+                        HashSet<Integer> nakumonikko = new HashSet<Integer>();
+                        for (int c : ts) {
+                            nakumonikko.addAll(mahdolliset.get(rivi*9+c));
                         }
-                        if (loytynyt == montako) {
+                        if (nakumonikko.size() == montako) {
                             HashSet<Integer> estot = new HashSet<Integer>(Arrays.asList(0,1,2,3,4,5,6,7,8));
-                            estot.removeAll(loytyneetpaikat);
+                            estot.removeAll(ts);
                             //System.out.println(loytynyt+" "+rivi+" "+estot.toString()+ts.toString());
                             for (int r : estot) {
                                 if (sudoku[rivi][r] == 0) {
-                                    for (int luku : ts) {
-                                        //System.out.println(montako+" EstaR " +(9*rivi+r)+" "+(luku));
-                                        estoLista.get(9*rivi+r).add(luku);
+                                    for (int luku : nakumonikko) {
+                                        if (!estoLista.get(9*rivi+r).contains(luku)) {
+                                            //System.out.println(montako+" EstaR " +(9*rivi+r)+" "+(luku));
+                                            estoLista.get(9*rivi+r).add(luku);
+                                        }
                                     }
                                 }
                             }
@@ -1804,7 +1782,7 @@ private static void uniqueRectangle(int[][] sudoku) {
                         TreeSet<Integer> temp = mahdolliset.get(rivi*9+sarake);
                         //apu.addAll(mahdolliset.get(rivi*9+sarake));
                         if (!temp.isEmpty()) {
-                            for (int z : temp) apu.add(z);
+                            apu.addAll(temp);
                             apu.removeAll(poisto);
                              if (!apu.isEmpty()) {
                                  loytynyt++;
@@ -1816,7 +1794,9 @@ private static void uniqueRectangle(int[][] sudoku) {
                         HashSet<Integer> estot = new HashSet<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9));
                         estot.removeAll(ts); 
                         for (int r : loytyneetpaikat) {
-                            estoLista.get(9*r + sarake). addAll(estot);
+                            if (!estoLista.get(9*r + sarake).containsAll(estot)) {
+                                estoLista.get(9*r + sarake).addAll(estot);
+                            }
                         }
                     }
                 }
@@ -1833,46 +1813,36 @@ private static void uniqueRectangle(int[][] sudoku) {
         }
         for (int montako = 2 ; montako < 5 ; montako++) {
             for (int sarake = 0; sarake < 9; sarake++) {
-                HashSet<Integer> rivinarvot = new HashSet<Integer>();
+                HashSet<Integer> ruudut = new HashSet<Integer>();
                 for (int i = 0 ; i < 9 ; i++) {
-                    rivinarvot.addAll(mahdolliset.get(i*9 + sarake));
+                    if (mahdolliset.get(i*9+sarake).size() != 0 && mahdolliset.get(i*9+sarake).size() <= montako ){
+                        ruudut.add(i);
+                    }
                 }
-                if (rivinarvot.size() >= montako) {
-                    //System.out.println("Nelikko " +rivinarvot.toString());
-                    Integer kokolista [] = rivinarvot.toArray(new Integer[rivinarvot.size()]);
-                    int lista[] = new int[rivinarvot.size()];
-                    for (int i = 0 ; i < rivinarvot.size(); i++ ) {
+                if (ruudut.size() >= montako) {
+                    Integer kokolista [] = ruudut.toArray(new Integer[ruudut.size()]);
+                    int lista[] = new int[ruudut.size()];
+                    for (int i = 0 ; i < ruudut.size(); i++ ) {
                         lista[i] = kokolista[i];
                     } 
                     int vaihtoehto[] = new int[montako];
                     hakuLista = new ArrayList<TreeSet<Integer>>();
-                    combinationUtil(lista, vaihtoehto, 0, rivinarvot.size()-1, 0, montako);
-                    //System.out.println(""+hakuLista.toString());
+                    combinationUtil(lista, vaihtoehto, 0, ruudut.size()-1, 0, montako);
                     for (TreeSet<Integer> ts : hakuLista) {
-                        HashSet<Integer> poisto = new HashSet<Integer>();
-                        poisto.addAll(rivinarvot);
-                        poisto.removeAll(ts);
-                        int loytynyt = 0;
-                        ArrayList<Integer> loytyneetpaikat = new ArrayList<Integer>();
-                        for (int rivi = 0 ; rivi < 9 ;rivi++) {
-                            HashSet<Integer> apu = new HashSet<Integer>();
-                            apu.addAll(mahdolliset.get(rivi*9+sarake));
-                            if (!apu.isEmpty()) {
-                                apu.removeAll(ts);
-                                 if (apu.isEmpty()) {
-                                     loytynyt++;
-                                     loytyneetpaikat.add(rivi);
-                                 }
-                            }
+                        HashSet<Integer> nakumonikko = new HashSet<Integer>();
+                        for (int c : ts) {
+                            nakumonikko.addAll(mahdolliset.get(c*9+sarake));
                         }
-                        if (loytynyt == montako) {
+                        if (nakumonikko.size() == montako) {
                             HashSet<Integer> estot = new HashSet<Integer>(Arrays.asList(0,1,2,3,4,5,6,7,8));
-                            estot.removeAll(loytyneetpaikat);
+                            estot.removeAll(ts);
                             for (int r : estot) {
                                 if (sudoku[r][sarake] == 0) {
-                                    for (int luku : ts) {
-                                        //System.out.println(montako+" EstaS " +(9*r+sarake)+" "+(luku));
-                                        estoLista.get(9*r+sarake).add(luku);
+                                    for (int luku : nakumonikko) {
+                                        if (!estoLista.get(9*r+sarake).contains(luku)) {
+                                            //System.out.println(montako+" EstaS " +(9*r+sarake)+" "+(luku));
+                                            estoLista.get(9*r+sarake).add(luku);
+                                        }
                                     }
                                 }
                             }
@@ -1923,11 +1893,11 @@ private static void uniqueRectangle(int[][] sudoku) {
                         for (int y = 0 ; y < 3 ;y++) {
                             for (int x = 0 ; x < 3 ;x++) {
                         
-                            HashSet<Integer> apu = new HashSet<Integer>();
-                            TreeSet<Integer> temp = mahdolliset.get((rivi+y)*9+sarake+x);
-                            
-                            if (!temp.isEmpty()) {
-                                for (int z : temp) apu.add(z);
+                                HashSet<Integer> apu = new HashSet<Integer>();
+                                TreeSet<Integer> temp = mahdolliset.get((rivi+y)*9+sarake+x);
+                                
+                                if (!temp.isEmpty()) {
+                                    apu.addAll(temp);
                                     apu.removeAll(poisto);
                                     if (!apu.isEmpty()) {
                                         loytynyt++;
@@ -1943,7 +1913,9 @@ private static void uniqueRectangle(int[][] sudoku) {
                             estot.removeAll(ts);
                             //tulostaVaihtoehdot(sudoku);
                             for (int r : loytyneetpaikat) {
-                                estoLista.get(9*(rivi+r/3)+sarake+r%3).addAll(estot);
+                                if (!estoLista.get(9*(rivi+r/3)+sarake+r%3).containsAll(estot)) {
+                                    estoLista.get(9*(rivi+r/3)+sarake+r%3).addAll(estot);
+                                }
                             }
                         }
                     }
@@ -1963,58 +1935,47 @@ private static void uniqueRectangle(int[][] sudoku) {
                 for ( int sarake = 0 ;sarake < 9 ; sarake=sarake+3) {
                     int vaaka = (rivi/3)*3;
                     int pysty = (sarake/3)*3;
-
-                    HashSet<Integer> rivinarvot = new HashSet<Integer>();
+                    HashSet<Integer> ruudut = new HashSet<Integer>();
+                    HashSet<Integer> alue = new HashSet<Integer>();
+                    
                     for (int y = vaaka ; y < vaaka+3; y++) {
                         for (int x = pysty ; x < pysty+3; x++) {
-                            rivinarvot.addAll(vaihtoehdot(y, x, sudoku));
+                            if (mahdolliset.get(y*9+x).size() != 0 && mahdolliset.get(y*9+x).size() <= montako ){
+                                ruudut.add(y*9+x);
+                            }    
+                            alue.add(y*9+x);
                         }
                     }
 
-                    if (rivinarvot.size() >= montako) {
-                        //System.out.println("Nelikko " +rivinarvot.toString());
-                        Integer kokolista [] = rivinarvot.toArray(new Integer[rivinarvot.size()]);
-                        int lista[] = new int[rivinarvot.size()];
-                        for (int i = 0 ; i < rivinarvot.size(); i++ ) {
+                    if (ruudut.size() >= montako) {
+                        Integer kokolista [] = ruudut.toArray(new Integer[ruudut.size()]);
+                        int lista[] = new int[ruudut.size()];
+                        for (int i = 0 ; i < ruudut.size(); i++ ) {
                             lista[i] = kokolista[i];
                         } 
                         int vaihtoehto[] = new int[montako];
                         hakuLista = new ArrayList<TreeSet<Integer>>();
-                        combinationUtil(lista, vaihtoehto, 0, rivinarvot.size()-1, 0, montako);
-                        //System.out.println(""+hakuLista.toString());
+                        combinationUtil(lista, vaihtoehto, 0, ruudut.size()-1, 0, montako);
+                        //System.out.println(montako+" "+hakuLista.toString());
+                        
                         for (TreeSet<Integer> ts : hakuLista) {
-                            //TreeSet<Integer> poisto = new TreeSet<Integer>();
-                            //poisto.addAll(rivinarvot);
-                            //poisto.removeAll(ts);
-                            int loytynyt = 0;
-                            ArrayList<Integer> loytyneetpaikat = new ArrayList<Integer>();
-                            for (int y = 0 ; y < 3 ;y++) {
-                                for (int x = 0 ; x < 3 ;x++) {
-
-                                HashSet<Integer> apu = new HashSet<Integer>();
-                                TreeSet<Integer> temp = mahdolliset.get((rivi+y)*9+sarake+x);
-
-
-                                //apu.addAll(mahdolliset.get((rivi+y)*9+sarake+x));
-                                if (!temp.isEmpty()) {
-                                    for (int z : temp) apu.add(z);
-                                        apu.removeAll(ts);
-                                        if (apu.isEmpty()) {
-                                        loytynyt++;
-                                        loytyneetpaikat.add(y*3+x);
-                                        }
-                                    }
-                                }
+                            //System.out.println("ts " +ts);
+                            HashSet<Integer> nakumonikko = new HashSet<Integer>();
+                            for (int c : ts) {
+                                nakumonikko.addAll(mahdolliset.get(c));
                             }
-                            if (loytynyt == montako) {
-                                HashSet<Integer> estot = new HashSet<Integer>(Arrays.asList(0,1,2,3,4,5,6,7,8));
-                                estot.removeAll(loytyneetpaikat);
+                            if (nakumonikko.size() == montako) {
+                                //System.out.println(rivi+":"+sarake+"  "+montako+" "+nakumonikko+" "+ alue);
+                                
+                                HashSet<Integer> estot = new HashSet<Integer>(alue);
+                                estot.removeAll(ts);
                                 for (int r : estot) {
-                                    if (sudoku[(rivi+r/3)][sarake+r%3] == 0) {
-                                        for (int luku : ts) {
-                                            //System.out.println(montako+" nakuMon EstaX " +(9*(rivi +r/3)+sarake+r%3)+" "+(luku));
-                                            estoLista.get(9*(rivi+r/3)+sarake+r%3).add(luku);
-                                            
+                                    if (sudoku[r/9][r%9] == 0) {
+                                        for (int luku : nakumonikko) {
+                                            if (!estoLista.get(r).contains(luku)) {
+                                                //System.out.println(montako+" nakuMon EstaX " +r+" "+(luku));
+                                                estoLista.get(r).add(luku);
+                                            }
                                         }
                                     }
                                 }
@@ -2024,7 +1985,7 @@ private static void uniqueRectangle(int[][] sudoku) {
                 }
             }
         }
-    }     
+    }        
    
     //Pointing Pairs, Pointing Triples
     private static void lukitseRivi(int[][] sudoku) {
@@ -2038,24 +1999,23 @@ private static void uniqueRectangle(int[][] sudoku) {
         //vaakaan
         for (int ruutuY = 0 ; ruutuY < 9 ; ruutuY=ruutuY+3) {
             for (int ruutuX = 0 ; ruutuX < 9 ; ruutuX=ruutuX+3) {
-                for (int vertailu = 0 ; vertailu < 3 ; vertailu++) {
+                for (int ruudunRivi = 0 ; ruudunRivi < 3 ; ruudunRivi++) {
                     HashSet<Integer> muut = new HashSet<Integer>();
                     HashSet<Integer> omat = new HashSet<Integer>();
-                    for (int sisus = 0 ; sisus < 9 ; sisus ++) {
-                        if (sisus >= vertailu*3 && sisus < vertailu*3+3) {
-                            //System.out.println(" oma " +((ruutuY+ sisus/3)*9+ruutuX+sisus%3));
-                            omat.addAll(mahdolliset.get((ruutuY+sisus/3)*9+ruutuX+sisus%3));
-                        } else {
-                            //System.out.println(" muu " +((ruutuY+sisus/3)*9+ruutuX+sisus%3));
-                            muut.addAll(mahdolliset.get((ruutuY+sisus/3)*9+ruutuX+sisus%3));
+                    for (int sy = 0 ; sy < 3 ; sy++) {
+                        for (int sx = 0 ; sx < 3 ; sx++) {
+                            if (sy == ruudunRivi) {
+                                omat.addAll(mahdolliset.get((ruutuY+sy)*9 + ruutuX + sx));
+                            } else {
+                                muut.addAll(mahdolliset.get((ruutuY+sy)*9 + ruutuX + sx));
+                            }
                         }
-
                     }
-                    //System.out.println(ruutuY+""+ruutuX+" - " + omat.toString()+muut.toString());
-                
+                    //System.out.println("Vaaka: "+ruutuY+":"+ruutuX+" " +ruudunRivi +" - " + omat.toString()+muut.toString());
+                   
                     omat.removeAll(muut);
                     if (!omat.isEmpty()) {
-                        int y = ruutuY+vertailu;
+                        int y = ruutuY+ruudunRivi;
                         for (int luku : omat) {
                             for (int x = 0 ; x < 9; x++) {
                                 if ( x < ruutuX || x >= ruutuX+3 ) {
@@ -2073,24 +2033,23 @@ private static void uniqueRectangle(int[][] sudoku) {
         //pystyyn
         for (int ruutuY = 0 ; ruutuY < 9 ; ruutuY=ruutuY+3) {
             for (int ruutuX = 0 ; ruutuX < 9 ; ruutuX=ruutuX+3) {
-                for (int vertailu = 0 ; vertailu < 3 ; vertailu++) {
+                for (int ruudunSarake = 0 ; ruudunSarake < 3 ; ruudunSarake++) {
                     HashSet<Integer> muut = new HashSet<Integer>();
                     HashSet<Integer> omat = new HashSet<Integer>();
-                    for (int sisus = 0 ; sisus < 9 ; sisus ++) {
-                        if (sisus%3 == vertailu) {
-                            //System.out.println(" oma " +((ruutuY+ sisus/3)*9+ruutuX+sisus%3));
-                            omat.addAll(mahdolliset.get((ruutuY+sisus/3)*9+ruutuX+sisus%3));
-                        } else {
-                            //System.out.println(" muu " +((ruutuY+sisus/3)*9+ruutuX+sisus%3));
-                            muut.addAll(mahdolliset.get((ruutuY+sisus/3)*9+ruutuX+sisus%3));
+                    for (int sy = 0 ; sy < 3 ; sy++) {
+                        for (int sx = 0 ; sx < 3 ; sx++) {
+                            if (sx == ruudunSarake) {
+                                omat.addAll(mahdolliset.get((ruutuY+sy)*9 + ruutuX + sx));
+                            } else {
+                                muut.addAll(mahdolliset.get((ruutuY+sy)*9 + ruutuX + sx));
+                            }
                         }
-
                     }
-                    //System.out.println(ruutuY+""+ruutuX+" - " + omat.toString()+muut.toString());
+                    //System.out.println("Pysty: "+ruutuY+":"+ruutuX+" " +ruudunSarake +" - " + omat.toString()+muut.toString());
                 
                     omat.removeAll(muut);
                     if (!omat.isEmpty()) {
-                        int x = ruutuX+vertailu;
+                        int x = ruutuX+ruudunSarake;
                         for (int luku : omat) {
                             for (int y = 0 ; y < 9; y++) {
                                 if ( y < ruutuY || y >= ruutuY+3 ) {
