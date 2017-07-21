@@ -1869,7 +1869,7 @@ public class Sudoku {
                 for (int y = vaaka ; y < vaaka+3; y++) {
                     for (int x = pysty ; x < pysty+3; x++) {
                         //rivinarvot.addAll(vaihtoehdot(y, x, sudoku));
-                        rivinarvot.addAll(mahdolliset.get(9*vaaka+pysty));
+                        rivinarvot.addAll(mahdolliset.get(9*y+x));
                     }
                 }
 
@@ -2211,7 +2211,6 @@ public class Sudoku {
         for (int i = 0; i < 9; i++) {
             if(sudoku[rivi][i] != 0) hs.add(sudoku[rivi][i]);
         }
-        
         return hs;
     }
 
@@ -2241,18 +2240,17 @@ public class Sudoku {
         HashSet<Integer> omat = new HashSet<Integer>();
         for (int i = 0 ; i < 9 ; i++) {
             if (sudoku[vaakarivi][i] == 0) {
-                TreeSet<Integer> ts = vaihtoehdot(vaakarivi, i, sudoku);
                 if (i == pystyrivi) {
-                    omat.addAll(ts);
+                    omat.addAll(vaihtoehdot(vaakarivi, i, sudoku));
                 } else {
-                    muut.addAll(ts);
+                    muut.addAll(vaihtoehdot(vaakarivi, i, sudoku));
                 }
             }
             
         }
         //System.out.println("vaaka:" +omat.toString()+" "+muut.toString());
         omat.removeAll(muut);
-        if (omat.size()==1) {
+        if (omat.size() > 0) {
             return (int) omat.toArray()[0];
         }
         
@@ -2264,18 +2262,17 @@ public class Sudoku {
         HashSet<Integer> omat = new HashSet<Integer>();
         for (int i = 0 ; i < 9 ; i++) {
             if (sudoku[i][pystyrivi] == 0) {
-                TreeSet<Integer> ts = vaihtoehdot(i, pystyrivi, sudoku);
                 if (i == vaakarivi) {
-                    omat.addAll(ts);
+                    omat.addAll(vaihtoehdot(i, pystyrivi, sudoku));
                 } else {
-                    muut.addAll(ts);
+                    muut.addAll(vaihtoehdot(i, pystyrivi, sudoku));
                 }
             }
             
         }
         //System.out.println("pysty:" +omat.toString()+" "+muut.toString());
         omat.removeAll(muut);
-        if (omat.size()==1) {
+        if (omat.size() > 0) {
             return (int) omat.toArray()[0];
         }
         return 0;
@@ -2289,11 +2286,10 @@ public class Sudoku {
         for (int y = vaaka ; y < vaaka+3; y++) {
             for (int x = pysty ; x < pysty+3; x++) {
                 if (sudoku[y][x] == 0) {
-                    TreeSet<Integer> ts = vaihtoehdot(y, x, sudoku);
                     if ((y == vaakarivi) && (x == pystyrivi)) {
-                        omat.addAll(ts);
+                        omat.addAll(vaihtoehdot(y, x, sudoku));
                     } else {
-                        muut.addAll(ts);
+                        muut.addAll(vaihtoehdot(y, x, sudoku));
                     }
                 }
            }
@@ -2301,9 +2297,8 @@ public class Sudoku {
 
         //System.out.println("ruutu:" +omat.toString()+" "+muut.toString());
         omat.removeAll(muut);
-        if (omat.size() == 1){
-            for ( int numero : omat) 
-               return numero;
+        if (omat.size() > 0) {
+            return (int) omat.toArray()[0];
         }
         return 0;
     }
