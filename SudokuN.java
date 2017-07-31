@@ -24,6 +24,7 @@ public class SudokuN {
     private static ArrayList<HashSet<Integer>> loydetytRivi;
     private static ArrayList<HashSet<Integer>> loydetytSarake;
     private static ArrayList<HashSet<Integer>> loydetytRuutu;
+    private static ArrayList<HashSet<Integer>> mahdolliset;
     private static int nishioStart = 0;
     private static int laskuri;
     private static int SIZE;
@@ -52,18 +53,20 @@ public class SudokuN {
             combinationUtil(arr, data, i+1, end, index+1, r);
         }
     }
-   
-//Pointing Pairs, Pointing Triples
-    private static boolean lukitseRivi(int[][] sudoku) {
-        //tulostaSudoku(sudoku);
-        //tulostaVaihtoehdot(sudoku);
-        boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
+
+    private static void asetaMahdolliset(int[][] sudoku) {
         for (int y = 0 ; y < SIZE*SIZE ; y++) {
             for (int x = 0 ; x < SIZE*SIZE; x++) {
                 mahdolliset.add(vaihtoehdot(y, x, sudoku));
             }
         }
+ }  
+//Pointing Pairs, Pointing Triples
+    private static boolean lukitseRivi(int[][] sudoku) {
+        //tulostaSudoku(sudoku);
+        //tulostaVaihtoehdot(sudoku);
+        boolean paluu = false;
+        
         //vaakaan
         for (int ruutuY = 0 ; ruutuY < SIZE*SIZE ; ruutuY=ruutuY+SIZE) {
             for (int ruutuX = 0 ; ruutuX < SIZE*SIZE ; ruutuX=ruutuX+SIZE) {
@@ -142,13 +145,7 @@ public class SudokuN {
     //Box Line Reduction
     private static boolean lukitseRuutu(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                mahdolliset.add(vaihtoehdot(y, x, sudoku));
-            }
-        }
-    
+
         //rivi
         for (int rivi = 0 ; rivi < SIZE*SIZE ; rivi++) {
             for (int vaakaRuutu = 0 ; vaakaRuutu < SIZE*SIZE ; vaakaRuutu=vaakaRuutu + SIZE) {
@@ -223,12 +220,6 @@ public class SudokuN {
     
     private static boolean piiloMonikotRivi(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                 mahdolliset.add(vaihtoehdot(y, x, sudoku));
-            }
-        }
         for (int montako = 2 ; montako < SIZE*2-1 ; montako++) {
             if ( paluu && montako >= SIZE ) return true;
             if (montako > 15) return false;
@@ -265,7 +256,7 @@ public class SudokuN {
                             estot.removeAll(ts);
                             for (int r : loytyneetpiilopaikat) {
 
-                                if (!estoLista.get(SIZE*SIZE*rivi+r).containsAll(estot) && !Collections.disjoint(mahdolliset.get(SIZE*SIZE*rivi+r),estot)) {
+                                if (!Collections.disjoint(mahdolliset.get(SIZE*SIZE*rivi+r),estot)) {
                                     estoLista.get(SIZE*SIZE*rivi+r).addAll(estot);
                                     mahdolliset.get(SIZE*SIZE*rivi+r).removeAll(estot);
                                     //System.out.println(montako+" Esta PiiloRivi "+(SIZE*SIZE*rivi+r)+" "+loytyneetpiilopaikat.toString()+ts.toString());
@@ -282,12 +273,6 @@ public class SudokuN {
 
     private static boolean nakuMonikotRivi(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                 mahdolliset.add(vaihtoehdot(y, x, sudoku));
-            }
-        }
         for (int montako = 2 ; montako < SIZE*(SIZE-1) ; montako++) {
             if ( paluu && montako >= SIZE ) return true;
             if (montako > 15) return false;
@@ -323,7 +308,7 @@ public class SudokuN {
                             for (int r : estot) {
                                 if (sudoku[rivi][r] == 0 ) {
                                     for (int luku : nakumonikko) {
-                                        if (!estoLista.get(SIZE*SIZE*rivi+r).contains(luku) && mahdolliset.get(SIZE*SIZE*rivi+r).contains(luku)) {
+                                        if (mahdolliset.get(SIZE*SIZE*rivi+r).contains(luku)) {
                                             //System.out.println(montako+" Naku mon EstaR " +(SIZE*SIZE*rivi+r)+" "+(luku));
                                             estoLista.get(SIZE*SIZE*rivi+r).add(luku);
                                             mahdolliset.get(SIZE*SIZE*rivi+r).remove(luku);
@@ -342,12 +327,6 @@ public class SudokuN {
 
     private static boolean piiloMonikotSarake(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                 mahdolliset.add(vaihtoehdot(y, x, sudoku));
-            }
-        }
         for (int montako = 2 ; montako < SIZE*2-1 ; montako++) {
             if ( paluu && montako >= SIZE ) return true;
             if (montako > 15) return false;
@@ -384,7 +363,7 @@ public class SudokuN {
                             HashSet<Integer> estot = new HashSet<Integer>(arvot);
                             estot.removeAll(ts); 
                             for (int r : loytyneetpiilopaikat) {
-                                if (!estoLista.get(SIZE*SIZE*r+sarake).containsAll(estot) && !Collections.disjoint(mahdolliset.get(SIZE*SIZE*r+sarake),estot)) {
+                                if (!Collections.disjoint(mahdolliset.get(SIZE*SIZE*r+sarake),estot)) {
                                     estoLista.get(SIZE*SIZE*r + sarake).addAll(estot);
                                     mahdolliset.get(SIZE*SIZE*r + sarake).removeAll(estot);
                                     //System.out.println(montako+" Esta PiiloSarake "+(SIZE*SIZE*r+sarake)+" "+loytyneetpiilopaikat.toString()+ts.toString());
@@ -401,12 +380,6 @@ public class SudokuN {
     
     private static boolean nakuMonikotSarake(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                 mahdolliset.add(vaihtoehdot(y, x, sudoku));
-            }
-        }
         for (int montako = 2 ; montako < SIZE*(SIZE-1) ; montako++) {
             if (paluu && montako >= SIZE) return true;
             if (montako > 15) return false;
@@ -442,7 +415,7 @@ public class SudokuN {
                             for (int r : estot) {
                                 if (sudoku[r][sarake] == 0 ) {
                                     for (int luku : nakumonikko) {
-                                        if (!estoLista.get(SIZE*SIZE*r+sarake).contains(luku) && mahdolliset.get(SIZE*SIZE*r+sarake).contains(luku)) {
+                                        if (mahdolliset.get(SIZE*SIZE*r+sarake).contains(luku)) {
                                             //System.out.println(montako+" Naku mon EstaS " +(SIZE*SIZE*r+sarake)+" "+(luku));
                                             estoLista.get(SIZE*SIZE*r+sarake).add(luku);
                                             mahdolliset.get(SIZE*SIZE*r+sarake).remove(luku);
@@ -461,12 +434,6 @@ public class SudokuN {
 
     private static boolean piiloMonikotRuutu(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                 mahdolliset.add(vaihtoehdot(y, x, sudoku));
-            }
-        }
         for (int montako = 2 ; montako < SIZE*2-1 ; montako++) {
             if ( paluu && montako >= SIZE ) return true;
             if (montako > 15) return false;
@@ -513,7 +480,7 @@ public class SudokuN {
                                 estot.removeAll(ts);
                                 //System.out.println(montako+" EstaPiiloX 0" +" "+estot);
                                 for (int r : loytyneetpiilopaikat) {
-                                    if (!estoLista.get(r).containsAll(estot) && !Collections.disjoint(mahdolliset.get(r), estot)) {
+                                    if (!Collections.disjoint(mahdolliset.get(r), estot)) {
                                         estoLista.get(r).addAll(estot);
                                         mahdolliset.get(r).removeAll(estot);
                                         //System.out.println(montako+" Esta PiiloX " +r+" "+loytyneetpiilopaikat.toString()+ts.toString());
@@ -531,12 +498,6 @@ public class SudokuN {
    
     private static boolean nakuMonikotRuutu(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                 mahdolliset.add(vaihtoehdot(y, x, sudoku));
-            }
-        }
         for (int montako = 2 ; montako < SIZE*(SIZE-1) ; montako++) {
             if (paluu && montako >= SIZE) return true;
             if (montako > 15) return false;
@@ -582,7 +543,7 @@ public class SudokuN {
                                 for (int r : estot) {
                                     if (sudoku[r/(SIZE*SIZE)][r%(SIZE*SIZE)] == 0) {
                                         for (int luku : nakumonikko) {
-                                            if (!estoLista.get(r).contains(luku) && mahdolliset.get(r).contains(luku)) {
+                                            if (mahdolliset.get(r).contains(luku)) {
                                                 //System.out.println(montako+" Naku mon EstaX " +r+" "+(luku));
                                                 estoLista.get(r).add(luku);
                                                 mahdolliset.get(r).remove(luku);
@@ -602,14 +563,6 @@ public class SudokuN {
     
         private static boolean jellyfishVaaka(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < (SIZE*SIZE) ; y++) {
-            for (int x = 0 ; x < (SIZE*SIZE); x++) {
-                HashSet<Integer> ts = new HashSet<Integer>();
-                ts = vaihtoehdot(y, x, sudoku);
-                mahdolliset.add(ts);
-            }
-        }
         for (int numero = 1 ; numero <=(SIZE*SIZE) ; numero++) {
             ArrayList<Integer> xrivit  = new ArrayList<Integer>();
             HashSet<Integer> kaikkiSarakkeet = new HashSet<>();
@@ -635,9 +588,10 @@ public class SudokuN {
                 for ( int y : blokattavatRivit) {
                     for (int x : kaikkiSarakkeet) {
                         if (sudoku[y][x] == 0) {
-                            if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                            if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                 //System.out.println("Vaaka Jellyfish vaaka esta " + numero +" "+(SIZE*SIZE*y+x));
                                 estoLista.get(SIZE*SIZE*y+x).add(numero);
+                                mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                 paluu=true;
                             }
                         }
@@ -680,9 +634,10 @@ public class SudokuN {
                                     for ( int y : blokattavatRivit) {
                                         for (int x : apu2) {
                                             if (sudoku[y][x] == 0) {
-                                                if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                                                if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                                     //System.out.println("Vaaka Jellyfish Piilo esta " + numero +" "+((SIZE*SIZE)*y+x));
                                                     estoLista.get((SIZE*SIZE)*y+x).add(numero);
+                                                    mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                                     paluu=true;
                                                 }
                                             }
@@ -700,14 +655,7 @@ public class SudokuN {
     
     private static boolean jellyfishPysty(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < (SIZE*SIZE) ; y++) {
-            for (int x = 0 ; x < (SIZE*SIZE); x++) {
-                HashSet<Integer> ts = new HashSet<Integer>();
-                ts = vaihtoehdot(y, x, sudoku);
-                mahdolliset.add(ts);
-            }
-        }
+        
         for (int numero = 1 ; numero <=SIZE*SIZE ; numero++) {
             ArrayList<Integer> sarakkeet  = new ArrayList<Integer>();
             HashSet<Integer> kaikkiRivit = new HashSet<>();
@@ -733,9 +681,10 @@ public class SudokuN {
                 for ( int x : blokattavatSarakkeet) {
                     for (int y : kaikkiRivit) {
                         if (sudoku[y][x] == 0) {
-                            if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                            if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                 //System.out.println("Pysty Jellyfish  pysty esta " + numero +" "+(SIZE*SIZE*y+x));
                                 estoLista.get(SIZE*SIZE*y+x).add(numero);
+                                mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                 paluu=true;
                             }
                         }
@@ -777,9 +726,10 @@ public class SudokuN {
                                     for ( int x : blokattavatSarakkeet) {
                                         for (int y : apu2) {
                                             if (sudoku[y][x] == 0) {
-                                                if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                                                if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                                     //System.out.println("Pysty Jellyfish Piilo esta " + numero +" "+((SIZE*SIZE)*y+x));
                                                     estoLista.get((SIZE*SIZE)*y+x).add(numero);
+                                                    mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                                     paluu=true;
                                                 }
                                             }
@@ -797,14 +747,7 @@ public class SudokuN {
 
     private static boolean swordfishVaaka(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < (SIZE*SIZE) ; y++) {
-            for (int x = 0 ; x < (SIZE*SIZE); x++) {
-                HashSet<Integer> ts = new HashSet<Integer>();
-                ts = vaihtoehdot(y, x, sudoku);
-                mahdolliset.add(ts);
-            }
-        }
+        
         for (int numero = 1 ; numero <=(SIZE*SIZE) ; numero++) {
             ArrayList<Integer> xrivit  = new ArrayList<Integer>();
             HashSet<Integer> kaikkiSarakkeet = new HashSet<>();
@@ -835,9 +778,10 @@ public class SudokuN {
                 for ( int y : blokattavatRivit) {
                     for (int x : kaikkiSarakkeet) {
                         if (sudoku[y][x] == 0) {
-                            if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                            if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                 //System.out.println("Vaaka Swordfish esta " + numero +" "+(SIZE*SIZE*y+x));
                                 estoLista.get(SIZE*SIZE*y+x).add(numero);
+                                mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                 paluu = true;
                             }
                         }
@@ -874,9 +818,10 @@ public class SudokuN {
                                 for ( int y : blokattavatRivit) {
                                     for (int x : apu2) {
                                         if (sudoku[y][x] == 0) {
-                                            if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                                            if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                                 //System.out.println("Vaaka Swordfish Piilo esta " + numero +" "+(SIZE*SIZE*y+x));
                                                 estoLista.get((SIZE*SIZE)*y+x).add(numero);
+                                                mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                                 paluu = true;
                                             }
                                         }
@@ -892,14 +837,6 @@ public class SudokuN {
     }
     private static boolean swordfishPysty(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < (SIZE*SIZE) ; y++) {
-            for (int x = 0 ; x < (SIZE*SIZE); x++) {
-                HashSet<Integer> ts = new HashSet<Integer>();
-                ts = vaihtoehdot(y, x, sudoku);
-                mahdolliset.add(ts);
-            }
-        }
         for (int numero = 1 ; numero <=(SIZE*SIZE) ; numero++) {
             ArrayList<Integer> sarakkeet  = new ArrayList<Integer>();
             HashSet<Integer> kaikkiRivit = new HashSet<>();
@@ -930,9 +867,10 @@ public class SudokuN {
                 for ( int x : blokattavatSarakkeet) {
                     for (int y : kaikkiRivit) {
                         if (sudoku[y][x] == 0) {
-                            if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                            if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                 //System.out.println("Pysty Swordfish esta " + numero +" "+(SIZE*SIZE*y+x));
                                 estoLista.get(SIZE*SIZE*y+x).add(numero);
+                                mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                 paluu = true;
                             }
                         }
@@ -968,9 +906,10 @@ public class SudokuN {
                                 for ( int x : blokattavatSarakkeet) {
                                     for (int y : apu2) {
                                         if (sudoku[y][x] == 0) {
-                                            if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                                            if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                                 //System.out.println("Pysty swordfish Piilo esta " + numero +" "+(SIZE*SIZE*y+x));
                                                 estoLista.get((SIZE*SIZE)*y+x).add(numero);
+                                                mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                                 paluu = true;
                                             }
                                         }
@@ -988,14 +927,6 @@ public class SudokuN {
     private static boolean xWingVaaka(int[][] sudoku) {
         //tulostaVaihtoehdot(sudoku);
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                HashSet<Integer> ts = new HashSet<Integer>();
-                ts = vaihtoehdot(y, x, sudoku);
-                mahdolliset.add(ts);
-            }
-        }
         for (int numero = 1 ; numero <=SIZE*SIZE ; numero++) {
             ArrayList<Integer> xrivit  = new ArrayList<Integer>();
             HashSet<Integer> kaikkiSarakkeet = new HashSet<>();
@@ -1022,9 +953,10 @@ public class SudokuN {
                 for ( int y : blokattavatRivit) {
                     for (int x : kaikkiSarakkeet) {
                         if (sudoku[y][x] == 0) {
-                            if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                            if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                 //System.out.println("Vaaka xwing esta " + numero +" "+(SIZE*SIZE*y+x));
                                 estoLista.get(SIZE*SIZE*y+x).add(numero);
+                                mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                 paluu = true;
                             }
                         }
@@ -1043,9 +975,10 @@ public class SudokuN {
                             for ( int y : blokattavatRivit) {
                                 for (int x : loytyneetParit.get(i)) {
                                     if (sudoku[y][x] == 0) {
-                                        if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                                        if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                             //System.out.println("Vaaka xwing Piilo esta " + numero +" "+(SIZE*SIZE*y+x));
                                             estoLista.get(SIZE*SIZE*y+x).add(numero);
+                                            mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                             paluu = true;
                                         }
                                     }
@@ -1060,14 +993,6 @@ public class SudokuN {
     }
     private static boolean xWingPysty(int[][] sudoku) {
         boolean paluu = false;
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                HashSet<Integer> ts = new HashSet<Integer>();
-                ts = vaihtoehdot(y, x, sudoku);
-                mahdolliset.add(ts);
-            }
-        }
         for (int numero = 1 ; numero <=SIZE*SIZE ; numero++) {
             ArrayList<Integer> sarakkeet  = new ArrayList<Integer>();
             HashSet<Integer> kaikkiRivit = new HashSet<>();
@@ -1093,9 +1018,10 @@ public class SudokuN {
                 for ( int x : blokattavatSarakkeet) {
                     for (int y : kaikkiRivit) {
                         if (sudoku[y][x] == 0) {
-                            if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                            if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                 //System.out.println("Pysty xwing esta " + numero +" "+(SIZE*SIZE*y+x));
                                 estoLista.get(SIZE*SIZE*y+x).add(numero);
+                                mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                 paluu = true;
                             }
                         }
@@ -1114,9 +1040,10 @@ public class SudokuN {
                             for ( int x : blokattavatSarakkeet) {
                                 for (int y : loytyneetParit.get(i)) {
                                     if (sudoku[y][x] == 0) {
-                                        if (!estoLista.get(SIZE*SIZE*y+x).contains(numero) && mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
+                                        if (mahdolliset.get(SIZE*SIZE*y+x).contains(numero)) {
                                             //System.out.println("Pysty xwing Piilo esta " + numero +" "+(SIZE*SIZE*y+x));
                                             estoLista.get(SIZE*SIZE*y+x).add(numero);
+                                            mahdolliset.get(SIZE*SIZE*y+x).remove(numero);
                                             paluu = true;
                                         }
                                     }
@@ -1132,16 +1059,14 @@ public class SudokuN {
 
     private static boolean nishio(int[][] sudoku) {
         //tulostaVaihtoehdot(sudoku);
-        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
         int [][] kopio = new int[SIZE*SIZE][SIZE*SIZE];
         
-        for (int y = 0 ; y < SIZE*SIZE ; y++) {
-            for (int x = 0 ; x < SIZE*SIZE; x++) {
-                mahdolliset.add(vaihtoehdot(y, x, sudoku));
-            }
-        }
+        
         for (int i = nishioStart ; i < SIZE*SIZE*SIZE*SIZE ; i ++) {
             if (i%10 == 0) System.out.print("n");
+            mahdolliset = new ArrayList<HashSet<Integer>>();
+            asetaMahdolliset(sudoku);
+
             int v = mahdolliset.get(i).size();
             //if (v > 1 && v < SIZE*2) {
                 for (int n : mahdolliset.get(i)) {
@@ -1564,22 +1489,19 @@ public class SudokuN {
                             AsetaVarma(y, x, sudoku[y][x]);
                             loytyi = true;
                             //System.out.println(y+" vaaka "+x+" "+sudoku[y][x]);
-                        }
-
-                        if (sudoku[y][x] == 0) {
+                        } else {
                             sudoku[y][x] = orpoPystyRivi(y, x, sudoku);
                             if (sudoku[y][x] != 0) {
                                 AsetaVarma(y, x, sudoku[y][x]);
                                 loytyi = true;
                                 //System.out.println(y+" pysty "+x+" "+sudoku[y][x]);
-                            }
-                        }
-                        if (sudoku[y][x] == 0) {
-                            sudoku[y][x] = orpoRuutu(y, x, sudoku);
-                            if (sudoku[y][x] != 0) {
-                                AsetaVarma(y, x, sudoku[y][x]);
-                                loytyi = true;
-                                //System.out.println(y+" ruutu "+x+" "+sudoku[y][x]);
+                            } else {
+                                sudoku[y][x] = orpoRuutu(y, x, sudoku);
+                                if (sudoku[y][x] != 0) {
+                                    AsetaVarma(y, x, sudoku[y][x]);
+                                    loytyi = true;
+                                    //System.out.println(y+" ruutu "+x+" "+sudoku[y][x]);
+                                }
                             }
                         }
                     }
@@ -1593,6 +1515,7 @@ public class SudokuN {
         loydetytRivi = new ArrayList<HashSet<Integer>>(); 
         loydetytSarake = new ArrayList<HashSet<Integer>>(); 
         loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+        
         for (int i = 0 ; i < SIZE*SIZE ; i++) {
             HashSet<Integer> hs1 = new HashSet<Integer>();
             loydetytRivi.add(hs1);
@@ -1602,13 +1525,16 @@ public class SudokuN {
             loydetytRuutu.add(hs3);
         }
         estoLista = new ArrayList<HashSet<Integer>>(); 
+        int valmiina = 0;
         for (int i = 0 ; i < SIZE*SIZE*SIZE*SIZE ; i++) {
             HashSet<Integer> hs = new HashSet<Integer>();
             estoLista.add(hs);
-            if (sudoku[i/(SIZE*SIZE)][i%(SIZE*SIZE)] !=0 )
-            AsetaVarma(i/(SIZE*SIZE),i%(SIZE*SIZE),sudoku[i/(SIZE*SIZE)][i%(SIZE*SIZE)]);
+            if (sudoku[i/(SIZE*SIZE)][i%(SIZE*SIZE)] !=0 ) {
+                AsetaVarma(i/(SIZE*SIZE),i%(SIZE*SIZE),sudoku[i/(SIZE*SIZE)][i%(SIZE*SIZE)]);
+                valmiina++;
+            }
         }
-        System.out.println("Ratkaistu : " + (SIZE*SIZE*SIZE*SIZE-nollia(sudoku))+"/"+SIZE*SIZE*SIZE*SIZE);
+        System.out.println("Ratkaistu : " + valmiina+"/"+SIZE*SIZE*SIZE*SIZE);
         boolean uusiksi = true;
         //tulostaVaihtoehdot(sudoku);
         while (uusiksi) {
@@ -1618,6 +1544,8 @@ public class SudokuN {
             }
             if (nollia(sudoku)!=0) {
                 System.out.print("@");
+                mahdolliset = new ArrayList<HashSet<Integer>>();
+                asetaMahdolliset(sudoku);
                 int a = 0;
                 uusiksi = lukitseRivi(sudoku) || uusiksi;
                 uusiksi = lukitseRuutu(sudoku) || uusiksi;
