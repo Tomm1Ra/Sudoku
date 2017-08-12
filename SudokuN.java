@@ -25,7 +25,6 @@ public class SudokuN {
     private static ArrayList<HashSet<Integer>> loydetytSarake;
     private static ArrayList<HashSet<Integer>> loydetytRuutu;
     private static ArrayList<HashSet<Integer>> mahdolliset;
-    private static int nishioStart = 0;
     private static int laskuri;
     private static int SIZE;
     private static ArrayList<String> merkisto;
@@ -1060,84 +1059,90 @@ public class SudokuN {
     private static boolean nishio(int[][] sudoku) {
         //tulostaVaihtoehdot(sudoku);
         int [][] kopio = new int[SIZE*SIZE][SIZE*SIZE];
-        
-        
-        for (int i = nishioStart ; i < SIZE*SIZE*SIZE*SIZE ; i ++) {
-            if (i%10 == 0) System.out.print("n");
-            mahdolliset = new ArrayList<HashSet<Integer>>();
-            asetaMahdolliset(sudoku);
-
-            int v = mahdolliset.get(i).size();
-            //if (v > 1 && v < SIZE*2) {
-                for (int n : mahdolliset.get(i)) {
-                    for (int y = 0 ; y < SIZE*SIZE ; y++) {
-                        for (int x = 0 ; x < SIZE*SIZE; x++) {
-                            kopio[y][x] = sudoku[y][x];
-                        }
-                    }
-                    kopio[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = n;
-                    loydetytRivi = new ArrayList<HashSet<Integer>>(); 
-                    loydetytSarake = new ArrayList<HashSet<Integer>>(); 
-                    loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
-                    for (int j = 0 ; j < SIZE*SIZE ; j++) {
-                        HashSet<Integer> hs1 = new HashSet<Integer>();
-                        loydetytRivi.add(hs1);
-                        HashSet<Integer> hs2 = new HashSet<Integer>();
-                        loydetytSarake.add(hs2);
-                        HashSet<Integer> hs3 = new HashSet<Integer>();
-                        loydetytRuutu.add(hs3);
-                    }
-
-                    for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
-                        HashSet<Integer> hs = new HashSet<Integer>();
-                        AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),kopio[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
-                    }
-
-                    while (etsiVarmat(kopio)){};
-                    if (nollia(kopio) == 0) {
-
+        ArrayList<HashSet<Integer>> m = new ArrayList<HashSet<Integer>>();
+        for (int y = 0 ; y <  SIZE*SIZE ; y++) {
+            for (int x = 0 ; x <  SIZE*SIZE; x++) {
+                m.add(vaihtoehdot(y, x, sudoku));
+            }
+        }
+        for (int mahdollisuuksia = 2 ; mahdollisuuksia < SIZE*SIZE ; mahdollisuuksia++) {
+            System.out.print("n");
+            
+            for (int i = 0 ; i < SIZE*SIZE*SIZE*SIZE ; i ++) {
+                if (m.get(i).size() == mahdollisuuksia) {
+                    for (int n : m.get(i)) {
                         for (int y = 0 ; y < SIZE*SIZE ; y++) {
-                           for (int x = 0 ; x < SIZE*SIZE; x++) {
-                               sudoku[y][x] = kopio[y][x];
-                           }
+                            for (int x = 0 ; x < SIZE*SIZE; x++) {
+                                kopio[y][x] = sudoku[y][x];
+                            }
                         }
-                        //System.out.println("Nishio: touchdown " +i +" " +n);
-                        System.out.print("X");
-                        return true;
+                        kopio[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = n;
                         
-                    }
-                    
-                    //tulostaVaihtoehdot(kopio);
-                    for ( int a = 0; a < SIZE*SIZE*SIZE*SIZE; a++) {
-                        if (kopio[a/(SIZE*SIZE)][a%(SIZE*SIZE)] == 0) {
-                            if (vaihtoehdot(a/(SIZE*SIZE), a%(SIZE*SIZE), kopio).isEmpty()) {
-                                //System.out.println("Nishio: "+i +" " + n +" a:"+a);
-                                System.out.print("N");
-                                estoLista.get(i).add(n);
-                                loydetytRivi = new ArrayList<HashSet<Integer>>(); 
-                                loydetytSarake = new ArrayList<HashSet<Integer>>(); 
-                                loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
-                                for (int j = 0 ; j < SIZE*SIZE ; j++) {
-                                    HashSet<Integer> hs1 = new HashSet<Integer>();
-                                    loydetytRivi.add(hs1);
-                                    HashSet<Integer> hs2 = new HashSet<Integer>();
-                                    loydetytSarake.add(hs2);
-                                    HashSet<Integer> hs3 = new HashSet<Integer>();
-                                    loydetytRuutu.add(hs3);
-                                }
+                        loydetytRivi = new ArrayList<HashSet<Integer>>(); 
+                        loydetytSarake = new ArrayList<HashSet<Integer>>(); 
+                        loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+                        for (int j = 0 ; j < SIZE*SIZE ; j++) {
+                            HashSet<Integer> hs1 = new HashSet<Integer>();
+                            loydetytRivi.add(hs1);
+                            HashSet<Integer> hs2 = new HashSet<Integer>();
+                            loydetytSarake.add(hs2);
+                            HashSet<Integer> hs3 = new HashSet<Integer>();
+                            loydetytRuutu.add(hs3);
+                        }
 
-                                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
-                                    HashSet<Integer> hs = new HashSet<Integer>();
-                                    AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudoku[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+                        for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                            HashSet<Integer> hs = new HashSet<Integer>();
+                            AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),kopio[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+                        }
+                        mahdolliset = new ArrayList<HashSet<Integer>>();
+                        asetaMahdolliset(kopio);
+                        
+                        while (etsiVarmat(kopio)){};
+                        if (sudokuValmis(kopio)) {
+
+                            for (int y = 0 ; y < SIZE*SIZE ; y++) {
+                            for (int x = 0 ; x < SIZE*SIZE; x++) {
+                                sudoku[y][x] = kopio[y][x];
+                            }
+                            }
+                            //System.out.println("Nishio: touchdown " +i +" " +n);
+                            System.out.print("X");
+                            return true;
+                            
+                        }
+                        
+                        //tulostaVaihtoehdot(kopio);
+                        for ( int a = 0; a < SIZE*SIZE*SIZE*SIZE; a++) {
+                            if (kopio[a/(SIZE*SIZE)][a%(SIZE*SIZE)] == 0) {
+                                if (vaihtoehdot(a/(SIZE*SIZE), a%(SIZE*SIZE), kopio).isEmpty()) {
+                                    //System.out.println("Nishio: "+i +" " + n +" a:"+a);
+                                    System.out.print("N");
+                                    estoLista.get(i).add(n);
+                                    loydetytRivi = new ArrayList<HashSet<Integer>>(); 
+                                    loydetytSarake = new ArrayList<HashSet<Integer>>(); 
+                                    loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+                                    for (int j = 0 ; j < SIZE*SIZE ; j++) {
+                                        HashSet<Integer> hs1 = new HashSet<Integer>();
+                                        loydetytRivi.add(hs1);
+                                        HashSet<Integer> hs2 = new HashSet<Integer>();
+                                        loydetytSarake.add(hs2);
+                                        HashSet<Integer> hs3 = new HashSet<Integer>();
+                                        loydetytRuutu.add(hs3);
+                                    }
+
+                                    for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                                        HashSet<Integer> hs = new HashSet<Integer>();
+                                        AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudoku[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+                                    }
+                                    return true;
                                 }
-                                return true;
                             }
                         }
                     }
+                    kopio[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = 0; 
                 }
-                kopio[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = 0; 
-            //}
-            nishioStart = i;
+            }
+            
         }
         loydetytRivi = new ArrayList<HashSet<Integer>>(); 
         loydetytSarake = new ArrayList<HashSet<Integer>>(); 
@@ -1328,8 +1333,8 @@ public class SudokuN {
 
     private static HashSet<Integer> vaihtoehdot(int vaakarivi, int pystyrivi, int[][] sudoku) {
         HashSet<Integer> ts = new HashSet<Integer>();
-        laskuri++;
         if (sudoku[vaakarivi][pystyrivi] == 0) {
+            laskuri++;
             ts.addAll(arvot);
             ts.removeAll(loydetytRivi.get(vaakarivi));
             ts.removeAll(loydetytSarake.get(pystyrivi));
@@ -1342,10 +1347,17 @@ public class SudokuN {
 
     private static void tulostaSudoku(int[][] sudoku) {
         System.out.println();
-        for(int n=0;n<(SIZE*SIZE*3 + SIZE*2) ;n++) System.out.print("-");
+        System.out.print(" +");
+        for(int a = 0 ; a < SIZE; a++) {
+            for(int b = 0 ; b < SIZE; b++) {
+                System.out.print("---");
+            }
+            System.out.print("-+");
+        }
         System.out.println();
         if (omaMerkisto) {
             for (int i = 0; i < SIZE*SIZE; i++) {
+                System.out.print(" |");
                 for (int j = 0; j < SIZE*SIZE; j++) {
                     if (sudoku[i][j] == 0) 
                         System.out.print(" . ");
@@ -1355,6 +1367,7 @@ public class SudokuN {
                 }
                 System.out.println();
                 if ((i+1)%SIZE==0) {
+                    System.out.print(" +");
                     for(int a = 0 ; a < SIZE; a++) {
                         for(int b = 0 ; b < SIZE; b++) {
                             System.out.print("---");
@@ -1366,6 +1379,7 @@ public class SudokuN {
             }
         } else {
             for (int i = 0; i < SIZE*SIZE; i++) {
+                System.out.print(" |");
                 for (int j = 0; j < SIZE*SIZE; j++) {
                     if (sudoku[i][j] < 10) System.out.print(" "); 
                     if (sudoku[i][j] < 100 && SIZE > 9) System.out.print(" "); 
@@ -1378,6 +1392,7 @@ public class SudokuN {
                 }
                 System.out.println();
                 if ((i+1)%SIZE==0) {
+                    System.out.print(" +");
                     for(int a = 0 ; a < SIZE; a++) {
                         for(int b = 0 ; b < SIZE; b++) {
                             if (SIZE < 10)
@@ -1413,6 +1428,15 @@ public class SudokuN {
             System.out.println();
             if ((i+1)%SIZE==0) System.out.println();
         }
+    }
+
+    public static boolean sudokuValmis(int[][] sudoku) {
+        for (int y = 0 ; y < SIZE*SIZE ; y++) {
+            for (int x = 0 ; x < SIZE*SIZE; x++) {
+                 if (sudoku[y][x] == 0) return false;
+            }
+        }
+        return true;
     }
 
     public static int nollia(int[][] sudoku) {
@@ -1542,7 +1566,7 @@ public class SudokuN {
             while (etsiVarmat(sudoku))  {
                 System.out.print("*");
             }
-            if (nollia(sudoku)!=0) {
+            if (!sudokuValmis(sudoku)) {
                 System.out.print("@");
                 mahdolliset = new ArrayList<HashSet<Integer>>();
                 asetaMahdolliset(sudoku);
@@ -1663,7 +1687,7 @@ public class SudokuN {
                 tulostaSudoku(sudoku);
                 if (!tuplat(sudoku)) {
                     ratkaise(sudoku);
-                    System.out.println("\n ** Ratkaisu * "+ laskuri +" * \n");
+                    System.out.println("\n\n ** Ratkaisu * "+ laskuri +" *");
                     tulostaSudoku(sudoku);
                     tarkasta(sudoku);
                 } else {
