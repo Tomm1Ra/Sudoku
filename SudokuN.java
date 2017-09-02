@@ -1099,7 +1099,6 @@ public class SudokuN {
                         
                         while (etsiVarmat(kopio)){};
                         if (sudokuValmis(kopio)) {
-
                             for (int y = 0 ; y < SIZE*SIZE ; y++) {
                             for (int x = 0 ; x < SIZE*SIZE; x++) {
                                 sudoku[y][x] = kopio[y][x];
@@ -1108,7 +1107,6 @@ public class SudokuN {
                             //System.out.println("Nishio: touchdown " +i +" " +n);
                             System.out.print("X");
                             return true;
-                            
                         }
                         
                         //tulostaVaihtoehdot(kopio);
@@ -1163,6 +1161,330 @@ public class SudokuN {
         return false;
     }       
 
+    private static boolean exclusion3(int[][] sudoku) {
+        // tulostaSudoku(sudoku);
+        //tulostaVaihtoehdot(sudoku);
+        
+        System.out.print("e");
+        boolean paluu = false;
+        int [][] sudokuA = new int[SIZE*SIZE][SIZE*SIZE];
+        int [][] sudokuB = new int[SIZE*SIZE][SIZE*SIZE];
+        int [][] sudokuC = new int[SIZE*SIZE][SIZE*SIZE];
+        ArrayList<HashSet<Integer>> mahdollisetOrg = new ArrayList<HashSet<Integer>>();
+        for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+            mahdollisetOrg.add(mahdolliset.get(j));
+        }
+        
+        for (int i = 0 ; i < SIZE*SIZE*SIZE*SIZE ; i ++) {
+            boolean info = false;
+            ArrayList<HashSet<Integer>> mahdollisetA = new ArrayList<HashSet<Integer>>();
+            ArrayList<HashSet<Integer>> mahdollisetB = new ArrayList<HashSet<Integer>>();
+            ArrayList<HashSet<Integer>> mahdollisetC = new ArrayList<HashSet<Integer>>();
+            if (mahdollisetOrg.get(i).size() == 3) {
+                for (int y = 0 ; y < SIZE*SIZE ; y++) {
+                    for (int x = 0 ; x < SIZE*SIZE; x++) {
+                        sudokuA[y][x] = sudoku[y][x];
+                        sudokuB[y][x] = sudoku[y][x];
+                        sudokuC[y][x] = sudoku[y][x];
+                    }
+                }
+                sudokuA[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = (int)mahdollisetOrg.get(i).toArray()[0];
+                loydetytRivi = new ArrayList<HashSet<Integer>>(); 
+                loydetytSarake = new ArrayList<HashSet<Integer>>(); 
+                loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+                for (int j = 0 ; j < SIZE*SIZE ; j++) {
+                    HashSet<Integer> hs1 = new HashSet<Integer>();
+                    loydetytRivi.add(hs1);
+                    HashSet<Integer> hs2 = new HashSet<Integer>();
+                    loydetytSarake.add(hs2);
+                    HashSet<Integer> hs3 = new HashSet<Integer>();
+                    loydetytRuutu.add(hs3);
+                }
+
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudokuA[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+                }
+                
+                while (etsiVarmat(sudokuA)){};
+                if (sudokuValmis(sudokuA)) {
+                    for (int y = 0 ; y < (SIZE*SIZE) ; y++) {
+                        for (int x = 0 ; x < (SIZE*SIZE); x++) {
+                            sudoku[y][x] = sudokuA[y][x];
+                        }
+                    }
+                    System.out.print("!");
+                    return true;
+                }
+                mahdolliset = new ArrayList<HashSet<Integer>>();
+                asetaMahdolliset(sudokuA);
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    mahdollisetA.add(mahdolliset.get(j));
+                }
+                // tulostaVaihtoehdot(sudokuA);
+                sudokuB[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = (int)mahdollisetOrg.get(i).toArray()[1];
+                loydetytRivi = new ArrayList<HashSet<Integer>>(); 
+                loydetytSarake = new ArrayList<HashSet<Integer>>(); 
+                loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+                for (int j = 0 ; j < SIZE*SIZE ; j++) {
+                    HashSet<Integer> hs1 = new HashSet<Integer>();
+                    loydetytRivi.add(hs1);
+                    HashSet<Integer> hs2 = new HashSet<Integer>();
+                    loydetytSarake.add(hs2);
+                    HashSet<Integer> hs3 = new HashSet<Integer>();
+                    loydetytRuutu.add(hs3);
+                }
+
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudokuB[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+                }
+                while (etsiVarmat(sudokuB)){};
+                if (sudokuValmis(sudokuB)) {
+                    for (int y = 0 ; y < (SIZE*SIZE) ; y++) {
+                        for (int x = 0 ; x < (SIZE*SIZE); x++) {
+                            sudoku[y][x] = sudokuB[y][x];
+                        }
+                    }
+                    System.out.print("!");
+                    return true;
+                }
+                mahdolliset = new ArrayList<HashSet<Integer>>();
+                asetaMahdolliset(sudokuB);
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    mahdollisetB.add(mahdolliset.get(j));
+                }
+
+                sudokuC[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = (int)mahdollisetOrg.get(i).toArray()[2];
+                loydetytRivi = new ArrayList<HashSet<Integer>>(); 
+                loydetytSarake = new ArrayList<HashSet<Integer>>(); 
+                loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+                for (int j = 0 ; j < SIZE*SIZE ; j++) {
+                    HashSet<Integer> hs1 = new HashSet<Integer>();
+                    loydetytRivi.add(hs1);
+                    HashSet<Integer> hs2 = new HashSet<Integer>();
+                    loydetytSarake.add(hs2);
+                    HashSet<Integer> hs3 = new HashSet<Integer>();
+                    loydetytRuutu.add(hs3);
+                }
+
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudokuC[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+                }
+                
+                while (etsiVarmat(sudokuC)){};
+                if (sudokuValmis(sudokuC)) {
+                    for (int y = 0 ; y < (SIZE*SIZE) ; y++) {
+                        for (int x = 0 ; x < (SIZE*SIZE); x++) {
+                            sudoku[y][x] = sudokuC[y][x];
+                        }
+                    }
+                    System.out.print("!");
+                    return true;
+                }
+                mahdolliset = new ArrayList<HashSet<Integer>>();
+                asetaMahdolliset(sudokuC);
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    mahdollisetC.add(mahdolliset.get(j));
+                }
+
+                for ( int a = 0; a < SIZE*SIZE*SIZE*SIZE; a++) {
+                    ArrayList<Integer> ind = new ArrayList<Integer>();
+                    ArrayList<Integer> luku = new ArrayList<Integer>();
+                    for ( int m : mahdollisetOrg.get(a)) {
+                        //System.out.println(a+" "+m+" "+sudokuA[a/(SIZE*SIZE)][a%(SIZE*SIZE)] +" "+ sudokuB[a/(SIZE*SIZE)][a%(SIZE*SIZE)] +" "+ mahdollisetA.get(a).toString() +" "+ mahdollisetB.get(a).toString());
+                        if (sudokuA[a/(SIZE*SIZE)][a%(SIZE*SIZE)] != m && sudokuB[a/(SIZE*SIZE)][a%(SIZE*SIZE)] != m && sudokuC[a/(SIZE*SIZE)][a%(SIZE*SIZE)] != m
+                            && !(mahdollisetA.get(a).contains(m) || mahdollisetB.get(a).contains(m) || mahdollisetC.get(a).contains(m))) {
+                            // System.out.println(" Exclusion3 "+a+" : " +m +" " + mahdollisetOrg.get(a).toString());
+                            paluu = true;
+                            estoLista.get(a).add(m);
+                            ind.add(a);
+                            luku.add(m);
+                            info = true;
+                        }
+                    }
+                    for (int n = 0 ; n < ind.size() ; n++) {
+                        mahdollisetOrg.get((int)ind.get(n)).remove((int)luku.get(n));
+                    }
+                    
+                    if (sudokuA[a/(SIZE*SIZE)][a%(SIZE*SIZE)] == 0 && mahdollisetA.get(a).isEmpty()) {
+                        //  System.out.println(" Exclusion A "+i+" + " +mahdollisetOrg.get(i).toArray()[0]);
+                        estoLista.get(i).add((int)mahdollisetOrg.get(i).toArray()[0]);
+                    }
+                    if (sudokuB[a/(SIZE*SIZE)][a%(SIZE*SIZE)] == 0 && mahdollisetB.get(a).isEmpty()) {
+                        //  System.out.println(" Exclusion B "+i+" + " + mahdollisetOrg.get(i).toArray()[1]);
+                        estoLista.get(i).add((int)mahdollisetOrg.get(i).toArray()[1]);
+                    }
+                    if (sudokuC[a/(SIZE*SIZE)][a%(SIZE*SIZE)] == 0 && mahdollisetC.get(a).isEmpty()) {
+                        // System.out.println(" Exclusion C "+i+" + " + mahdollisetOrg.get(i).toArray()[2]);
+                        estoLista.get(i).add((int)mahdollisetOrg.get(i).toArray()[2]);
+                    }
+                    
+                }
+                sudokuA[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = 0; 
+                sudokuB[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = 0; 
+                sudokuC[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = 0; 
+                if (info) System.out.print("3");
+            }
+        }
+        loydetytRivi = new ArrayList<HashSet<Integer>>(); 
+        loydetytSarake = new ArrayList<HashSet<Integer>>(); 
+        loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+        for (int j = 0 ; j < SIZE*SIZE ; j++) {
+            HashSet<Integer> hs1 = new HashSet<Integer>();
+            loydetytRivi.add(hs1);
+            HashSet<Integer> hs2 = new HashSet<Integer>();
+            loydetytSarake.add(hs2);
+            HashSet<Integer> hs3 = new HashSet<Integer>();
+            loydetytRuutu.add(hs3);
+        }
+
+        for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+            AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudoku[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+        }
+        mahdolliset = new ArrayList<HashSet<Integer>>();
+        asetaMahdolliset(sudoku);
+        return paluu;
+    }
+
+    private static boolean exclusion(int[][] sudoku) {
+        // tulostaSudoku(sudoku);
+        //tulostaVaihtoehdot(sudoku);
+        System.out.print("e");
+        boolean paluu = false;
+        int [][] sudokuA = new int[SIZE*SIZE][SIZE*SIZE];
+        int [][] sudokuB = new int[SIZE*SIZE][SIZE*SIZE];
+        ArrayList<HashSet<Integer>> mahdollisetOrg = new ArrayList<HashSet<Integer>>();
+        for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+            mahdollisetOrg.add(mahdolliset.get(j));
+        }
+        
+        for (int i = 0 ; i < SIZE*SIZE*SIZE*SIZE ; i ++) {
+            boolean info = false;
+            ArrayList<HashSet<Integer>> mahdollisetA = new ArrayList<HashSet<Integer>>();
+            ArrayList<HashSet<Integer>> mahdollisetB = new ArrayList<HashSet<Integer>>();
+            if (mahdollisetOrg.get(i).size() == 2) {
+                for (int y = 0 ; y < SIZE*SIZE ; y++) {
+                    for (int x = 0 ; x < SIZE*SIZE; x++) {
+                        sudokuA[y][x] = sudoku[y][x];
+                        sudokuB[y][x] = sudoku[y][x];
+                    }
+                }
+                sudokuA[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = (int)mahdollisetOrg.get(i).toArray()[0];
+                loydetytRivi = new ArrayList<HashSet<Integer>>(); 
+                loydetytSarake = new ArrayList<HashSet<Integer>>(); 
+                loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+                for (int j = 0 ; j < SIZE*SIZE ; j++) {
+                    HashSet<Integer> hs1 = new HashSet<Integer>();
+                    loydetytRivi.add(hs1);
+                    HashSet<Integer> hs2 = new HashSet<Integer>();
+                    loydetytSarake.add(hs2);
+                    HashSet<Integer> hs3 = new HashSet<Integer>();
+                    loydetytRuutu.add(hs3);
+                }
+
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudokuA[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+                }
+                
+                while (etsiVarmat(sudokuA)){};
+                if (sudokuValmis(sudokuA)) {
+                    for (int y = 0 ; y < (SIZE*SIZE) ; y++) {
+                        for (int x = 0 ; x < (SIZE*SIZE); x++) {
+                            sudoku[y][x] = sudokuA[y][x];
+                        }
+                    }
+                    System.out.print("!");
+                    return true;
+                }
+                mahdolliset = new ArrayList<HashSet<Integer>>();
+                asetaMahdolliset(sudokuA);
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    mahdollisetA.add(mahdolliset.get(j));
+                }
+                // tulostaVaihtoehdot(sudokuA);
+                sudokuB[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = (int)mahdollisetOrg.get(i).toArray()[1];
+                loydetytRivi = new ArrayList<HashSet<Integer>>(); 
+                loydetytSarake = new ArrayList<HashSet<Integer>>(); 
+                loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+                for (int j = 0 ; j < SIZE*SIZE ; j++) {
+                    HashSet<Integer> hs1 = new HashSet<Integer>();
+                    loydetytRivi.add(hs1);
+                    HashSet<Integer> hs2 = new HashSet<Integer>();
+                    loydetytSarake.add(hs2);
+                    HashSet<Integer> hs3 = new HashSet<Integer>();
+                    loydetytRuutu.add(hs3);
+                }
+
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudokuB[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+                }
+                while (etsiVarmat(sudokuB)){};
+                if (sudokuValmis(sudokuB)) {
+                    for (int y = 0 ; y < (SIZE*SIZE) ; y++) {
+                        for (int x = 0 ; x < (SIZE*SIZE); x++) {
+                            sudoku[y][x] = sudokuB[y][x];
+                        }
+                    }
+                    System.out.print("!");
+                    return true;
+                }
+                mahdolliset = new ArrayList<HashSet<Integer>>();
+                asetaMahdolliset(sudokuB);
+                for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+                    mahdollisetB.add(mahdolliset.get(j));
+                }
+                for ( int a = 0; a < SIZE*SIZE*SIZE*SIZE; a++) {
+                    ArrayList<Integer> ind = new ArrayList<Integer>();
+                    ArrayList<Integer> luku = new ArrayList<Integer>();
+                    for ( int m : mahdollisetOrg.get(a)) {
+                        //System.out.println(a+" "+m+" "+sudokuA[a/(SIZE*SIZE)][a%(SIZE*SIZE)] +" "+ sudokuB[a/(SIZE*SIZE)][a%(SIZE*SIZE)] +" "+ mahdollisetA.get(a).toString() +" "+ mahdollisetB.get(a).toString());
+                        if (sudokuA[a/(SIZE*SIZE)][a%(SIZE*SIZE)] != m && sudokuB[a/(SIZE*SIZE)][a%(SIZE*SIZE)] != m && !(mahdollisetA.get(a).contains(m) || mahdollisetB.get(a).contains(m))) {
+                            //System.out.println(" Exclusion "+a+" : " +m +" " + mahdollisetOrg.get(a).toString());
+                            paluu = true;
+                            estoLista.get(a).add(m);
+                            ind.add(a);
+                            luku.add(m);
+                            info = true;
+                        }
+                    }
+                    for (int n = 0 ; n < ind.size() ; n++) {
+                        mahdollisetOrg.get((int)ind.get(n)).remove((int)luku.get(n));
+                    }
+                    
+                    if (sudokuA[a/(SIZE*SIZE)][a%(SIZE*SIZE)] == 0 && mahdollisetA.get(a).isEmpty()) {
+                        //  System.out.println(" Exclusion A "+i+" + " +mahdollisetOrg.get(i).toArray()[0]);
+                        estoLista.get(i).add((int)mahdollisetOrg.get(i).toArray()[0]);
+                    }
+                    if (sudokuB[a/(SIZE*SIZE)][a%(SIZE*SIZE)] == 0 && mahdollisetB.get(a).isEmpty()) {
+                        //  System.out.println(" Exclusion B "+i+" + " + mahdollisetOrg.get(i).toArray()[1]);
+                        estoLista.get(i).add((int)mahdollisetOrg.get(i).toArray()[1]);
+                    }
+                    
+                }
+                sudokuA[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = 0; 
+                sudokuB[i/(SIZE*SIZE)][i%(SIZE*SIZE)] = 0; 
+                if (info) System.out.print("e");
+            }
+        }
+        loydetytRivi = new ArrayList<HashSet<Integer>>(); 
+        loydetytSarake = new ArrayList<HashSet<Integer>>(); 
+        loydetytRuutu = new ArrayList<HashSet<Integer>>(); 
+        for (int j = 0 ; j < SIZE*SIZE ; j++) {
+            HashSet<Integer> hs1 = new HashSet<Integer>();
+            loydetytRivi.add(hs1);
+            HashSet<Integer> hs2 = new HashSet<Integer>();
+            loydetytSarake.add(hs2);
+            HashSet<Integer> hs3 = new HashSet<Integer>();
+            loydetytRuutu.add(hs3);
+        }
+
+        for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
+            AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudoku[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+        }
+        mahdolliset = new ArrayList<HashSet<Integer>>();
+        asetaMahdolliset(sudoku);
+        
+        return paluu;
+    }
 
     private static HashSet<Integer> vaakarivi(int rivi, int[][] sudoku) {
         HashSet<Integer> hs = new HashSet<Integer>();
@@ -1497,13 +1819,13 @@ public class SudokuN {
             for (int x = 0 ; x < SIZE*SIZE ; x++) {
 
                 if (sudoku[y][x] == 0) {
-                    HashSet<Integer> ts = new HashSet<Integer>();
-                    ts = vaihtoehdot(y, x, sudoku);
-                    //System.out.println("vaihtoehdot: " + y + " " +x+ " : "+ts);
-                    if (ts.size() == 1) {
-                        sudoku[y][x] = (int)ts.toArray()[0];
+                    HashSet<Integer> hs = new HashSet<Integer>();
+                    hs = vaihtoehdot(y, x, sudoku);
+                    //System.out.println("vaihtoehdot: " + y + " " +x+ " : "+hs);
+                    if (hs.size() == 1) {
+                        sudoku[y][x] = (int)hs.toArray()[0];
                         AsetaVarma(y, x, sudoku[y][x]);
-                        //System.out.println("valinta: " + y + " " +x+ " : "+ts.first());
+                        //System.out.println("valinta: " + y + " " +x+ " : "+hs.first());
                         loytyi = true;
                     }
                     if (sudoku[y][x] == 0) {
@@ -1562,6 +1884,7 @@ public class SudokuN {
         boolean uusiksi = true;
         //tulostaVaihtoehdot(sudoku);
         while (uusiksi) {
+            
             uusiksi = false;
             while (etsiVarmat(sudoku))  {
                 System.out.print("*");
@@ -1570,26 +1893,29 @@ public class SudokuN {
                 System.out.print("@");
                 mahdolliset = new ArrayList<HashSet<Integer>>();
                 asetaMahdolliset(sudoku);
-                int a = 0;
                 uusiksi = lukitseRivi(sudoku) || uusiksi;
                 uusiksi = lukitseRuutu(sudoku) || uusiksi;
+                if (!uusiksi) System.out.print(">");
                 uusiksi = nakuMonikotRivi(sudoku) || uusiksi;
                 uusiksi = nakuMonikotSarake(sudoku) || uusiksi;
                 uusiksi = nakuMonikotRuutu(sudoku) || uusiksi;
- 
+                uusiksi = uusiksi || xWingVaaka(sudoku);
+                uusiksi = uusiksi || xWingPysty(sudoku);
                 if (SIZE > 3) {
                     uusiksi = uusiksi || swordfishVaaka(sudoku);
                     uusiksi = uusiksi || swordfishPysty(sudoku);
                     uusiksi = uusiksi || jellyfishVaaka(sudoku);
                     uusiksi = uusiksi || jellyfishPysty(sudoku);
-                    uusiksi = uusiksi || xWingVaaka(sudoku);
-                    uusiksi = uusiksi || xWingPysty(sudoku);
-                    
-                }                
+                }
+                if (!uusiksi) System.out.print(">");
                 uusiksi = uusiksi || piiloMonikotRivi(sudoku);
                 uusiksi = uusiksi || piiloMonikotSarake(sudoku);
                 uusiksi = uusiksi || piiloMonikotRuutu(sudoku);
-                if (SIZE > 3) uusiksi = uusiksi || nishio(sudoku);
+                uusiksi = uusiksi || exclusion(sudoku);
+                if (SIZE > 3) {
+                    uusiksi = uusiksi || exclusion3(sudoku);
+                    uusiksi = uusiksi || nishio(sudoku);
+                }
             }
         }
 
@@ -1653,8 +1979,24 @@ public class SudokuN {
                 omaMerkisto=true;
                 tulostaMerkisto = false;
                 merkisto = new ArrayList<>();
-                for (Character c : "123456789".toCharArray()) {
-                    merkisto.add(""+c);
+                if (s.length()>80) {
+                    for (Character c : "123456789".toCharArray()) {
+                        merkisto.add(""+c);
+                    }
+                } else if (s.length() > 15) {
+                    for (Character c : "1234".toCharArray()) {
+                        merkisto.add(""+c);
+                    }
+                } else {
+                    merkisto.add("1");
+                }
+                if (s.contains("@")) {
+                    tulostaMerkisto = true;
+                    merkisto = new ArrayList<>();
+                    String m = s.substring(s.indexOf("@")+1);
+                    for (Character c : m.toCharArray()) {
+                        merkisto.add(""+c);
+                    }
                 }
             } else {
                 try {

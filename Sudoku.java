@@ -2409,7 +2409,7 @@ public class Sudoku {
     private static boolean exclusion(int[][] sudoku) {
         //tulostaVaihtoehdot(sudoku);
         ArrayList<TreeSet<Integer>> mahdolliset = new ArrayList<TreeSet<Integer>>();
-        System.out.print("e");
+        System.out.print(">");
         boolean paluu = false;
         int [][] sudokuA = new int[9][9];
         int [][] sudokuB = new int[9][9];
@@ -2461,15 +2461,16 @@ public class Sudoku {
                     for ( int m : mahdolliset.get(a)) {
                         if (sudokuA[a/9][a%9] != m && sudokuB[a/9][a%9] != m && !(mahdollisetA.get(a).contains(m) || mahdollisetB.get(a).contains(m))) {
                             //System.out.println(" Exclusion "+a+" + " +m);
+                            if (!paluu) System.out.print("e");
                             paluu = true;
                             estoLista.get(a).add(m);
                         }
                     }
-                    if (sudokuA[a/9][a%9] == 0 && mahdollisetA.get(a).isEmpty()) { // vaihtoehdot(a/9, a%9, sudokuA).isEmpty()) {
+                    if (sudokuA[a/9][a%9] == 0 && mahdollisetA.get(a).isEmpty()) { 
                         // System.out.println(" Exclusion A "+i+" + " +mahdolliset.get(i).toArray()[0]);
                         estoLista.get(i).add((int)mahdolliset.get(i).toArray()[0]);
                     }
-                    if (sudokuB[a/9][a%9] == 0 && mahdollisetB.get(a).isEmpty()) { //vaihtoehdot(a/9, a%9, sudokuB).isEmpty()) {
+                    if (sudokuB[a/9][a%9] == 0 && mahdollisetB.get(a).isEmpty()) { 
                         // System.out.println(" Exclusion B "+i+" + " + mahdolliset.get(i).toArray()[1]);
                         estoLista.get(i).add((int)mahdolliset.get(i).toArray()[1]);
                     }
@@ -2805,9 +2806,11 @@ public class Sudoku {
             HashSet<Integer> hs = new HashSet<Integer>();
             estoLista.add(hs);
         }
-        boolean jatko = true;
-        lukitseRivi(sudoku);
-        lukitseRuutu(sudoku);
+        boolean jatko;
+        jatko = lukitseRivi(sudoku);
+        jatko = lukitseRuutu(sudoku) || jatko;
+        if (jatko) System.out.print("@");
+        jatko = true; 
         
         while (jatko) {
             jatko = false;
@@ -2821,13 +2824,13 @@ public class Sudoku {
                 return;
             }
             System.out.print("@");
-                
             jatko = lukitseRivi(sudoku) || jatko;
             jatko = lukitseRuutu(sudoku) || jatko;
             jatko = nakuMonikotRivi(sudoku) || jatko;
             jatko = nakuMonikotSarake(sudoku) || jatko;
             jatko = nakuMonikotRuutu(sudoku) || jatko;
 
+            if (!jatko) System.out.print(">");
             jatko = jatko || xWingPysty(sudoku);
             jatko = jatko || xWingVaaka(sudoku);
             jatko = jatko || etaPari(sudoku);
@@ -2846,7 +2849,8 @@ public class Sudoku {
             jatko = jatko || xyzWing(sudoku);
             jatko = jatko || jellyfishVaaka(sudoku);
             jatko = jatko || jellyfishPysty(sudoku);
-            
+
+            if (!jatko) System.out.print(">");
             jatko = jatko || piiloMonikotRivi(3, sudoku);
             jatko = jatko || piiloMonikotSarake(3,sudoku);
             jatko = jatko || piiloMonikotRuutu(3, sudoku);
@@ -2858,14 +2862,14 @@ public class Sudoku {
             jatko = jatko || bug(sudoku);
             jatko = jatko || uniqueRectangle(sudoku);
             jatko = jatko || exclusion(sudoku);
-            jatko = jatko || nishio(sudoku);
+            //jatko = jatko || nishio(sudoku);
 
             //tulostaVaihtoehdot(sudoku);
             //System.out.println(nollia(sudoku)+"/"+paikkoja(sudoku));
         }
         if (nollia(sudoku)!=0) {
             //tulostaVaihtoehdot(sudoku);
-            System.out.print("$");
+            System.out.print(" *");
             rekurse(0, sudoku);
         }
     }
