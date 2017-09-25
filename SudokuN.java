@@ -1091,8 +1091,7 @@ public class SudokuN {
                         }
 
                         for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
-                            HashSet<Integer> hs = new HashSet<Integer>();
-                            AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),kopio[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
+                           AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),kopio[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
                         }
                         mahdolliset = new ArrayList<HashSet<Integer>>();
                         asetaMahdolliset(kopio);
@@ -1129,7 +1128,6 @@ public class SudokuN {
                                     }
 
                                     for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
-                                        HashSet<Integer> hs = new HashSet<Integer>();
                                         AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudoku[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
                                     }
                                     return true;
@@ -1155,7 +1153,6 @@ public class SudokuN {
         }
 
         for (int j = 0 ; j < SIZE*SIZE*SIZE*SIZE ; j++) {
-            HashSet<Integer> hs = new HashSet<Integer>();
             AsetaVarma(j/(SIZE*SIZE),j%(SIZE*SIZE),sudoku[j/(SIZE*SIZE)][j%(SIZE*SIZE)]);
         }        
         return false;
@@ -1729,8 +1726,80 @@ public class SudokuN {
             }
         }
     }
-    
+
+    private static String haetulostus(int[][] sudoku, ArrayList<HashSet<Integer>> mahdolliset , int rivi, int ruuturivi, int ruutu) {
+        StringBuilder paluu = new StringBuilder();
+        
+        for (int luku = ruuturivi*SIZE+1 ; luku < ruuturivi*SIZE+SIZE+1 ; luku++) {
+            if (mahdolliset.get(rivi*SIZE*SIZE + ruutu ).contains(luku)) {
+                paluu.append(merkisto.get(luku-1));
+                paluu.append("");
+            } else paluu.append(" ");
+        }
+        paluu.append(" ");
+        
+        if (mahdolliset.get(rivi*SIZE*SIZE + ruutu ).isEmpty()) {
+            paluu = new StringBuilder();
+            // if (ruuturivi==SIZE/2) {
+            // if (SIZE > 1) paluu.append("*");
+            // paluu.append(merkisto.get(sudoku[rivi][ruutu]-1));
+            // if (SIZE > 2) paluu.append("*");
+            // for (int t=0; t<SIZE-3; t++) paluu.append(" ");
+            
+            // } else {
+                for (int t=0; t<SIZE; t++)
+                paluu.append(merkisto.get(sudoku[rivi][ruutu]-1));
+            // }
+            paluu.append(" ");
+        }
+        
+        return paluu.toString();
+    }
+
+    private static void tulostaVaihtoehdotA(int[][] sudoku) {
+        ArrayList<HashSet<Integer>> mahdolliset = new ArrayList<HashSet<Integer>>();
+        for (int y = 0 ; y < SIZE*SIZE ; y++) {
+            for (int x = 0 ; x < SIZE*SIZE; x++) {
+                mahdolliset.add(vaihtoehdot(y, x, sudoku));
+            }
+        }
+        System.out.print("-");
+        for (int a = 0 ; a < SIZE; a++) {
+            for (int b = 0 ; b < SIZE*(SIZE+1); b++) {
+                System.out.print("-");
+            }
+            System.out.print("+-");
+        }
+        System.out.println();
+        
+        for (int rivi = 0 ; rivi < SIZE*SIZE ; rivi ++) {
+            for (int ruuturivi = 0 ; ruuturivi < SIZE ; ruuturivi ++) {
+                System.out.print(" ");
+                for (int ruutu = 0 ; ruutu < SIZE*SIZE ; ruutu ++) {
+                    System.out.print(haetulostus(sudoku, mahdolliset, rivi, ruuturivi, ruutu )); 
+                    if ((ruutu+1)%SIZE==0) System.out.print("| ");
+                }
+                System.out.println(" ");
+            }
+            if ((rivi+1)%SIZE == 0) {
+                System.out.print("-");
+                for (int a = 0 ; a < SIZE; a++) {
+                    for (int b = 0 ; b < SIZE*(SIZE+1); b++) {
+                        System.out.print("-");
+                    }
+                    System.out.print("+-");
+                }
+                System.out.println();
+            }
+            
+        }
+    }
+
     private static void tulostaVaihtoehdot(int[][] sudoku) {
+        if (omaMerkisto) {
+            tulostaVaihtoehdotA(sudoku); 
+            return;
+        }
         System.out.println();
         for (int i = 0; i < SIZE*SIZE; i++) {
             for (int j = 0; j < SIZE*SIZE; j++) {
@@ -1880,9 +1949,9 @@ public class SudokuN {
                 valmiina++;
             }
         }
-        System.out.println("Ratkaistu : " + valmiina+"/"+SIZE*SIZE*SIZE*SIZE);
+        System.out.println("(" + valmiina+"/"+SIZE*SIZE*SIZE*SIZE +")");
         boolean uusiksi = true;
-        //tulostaVaihtoehdot(sudoku);
+        // tulostaVaihtoehdot(sudoku);
         while (uusiksi) {
             
             uusiksi = false;
@@ -1962,6 +2031,7 @@ public class SudokuN {
         rivit = new HashSet<>();
         arvot = new HashSet<>();
         boolean tulostaMerkisto=true;
+        long startTime = System.currentTimeMillis();
         
         laskuri = 0;
         String s ="";
@@ -2029,7 +2099,7 @@ public class SudokuN {
                 tulostaSudoku(sudoku);
                 if (!tuplat(sudoku)) {
                     ratkaise(sudoku);
-                    System.out.println("\n\n ** Ratkaisu * "+ laskuri +" *");
+                    System.out.println(" * "+ laskuri +" *");
                     tulostaSudoku(sudoku);
                     tarkasta(sudoku);
                 } else {
@@ -2040,7 +2110,7 @@ public class SudokuN {
             }
             
         }
-
+        System.out.println(" # "+  (System.currentTimeMillis() - startTime )+"ms ");
     }
     
     public static ArrayList<Integer> parsiSisalto(String sisalto) {
@@ -2091,7 +2161,7 @@ public class SudokuN {
             while (lukija.hasNext()) {
                 String s = lukija.next();
                 if ((s.startsWith("#")) || s.startsWith("!")) {
-                    s = lukija.nextLine();
+                    if (lukija.hasNext()) s = lukija.nextLine();
                 } else if (s.startsWith("@"))  {
                     merkit.append(s);
                 } else {
