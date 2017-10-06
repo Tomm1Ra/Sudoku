@@ -1,4 +1,7 @@
 # Sudoku
+
+https://github.com/Tomm1Ra/Sudoku
+
 Sudoku solver
 
 Usage :
