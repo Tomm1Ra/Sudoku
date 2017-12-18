@@ -1,0 +1,195 @@
+a-e means non overlapping 3x3 sudoku box
+x = overlapping sudoku box
+
+OverlappingSudoku
+2 sudokus any size, one common box
+aa
+axb
+ bb
+
+Overlapping4Sudoku
+2 sudokus any size, 4 common boxes
+aaa
+axxb
+axxb
+ bbb
+
+SamuraiSudoku 5 9x9 sudokus 
+aaa bbb
+aaa bbb
+aaxcxbb
+  ccc
+ddxcxee
+ddd eee
+ddd eee  
+
+Samurai4Sudoku 4 9x9 sudokus
+  aaa
+  aaa
+bbxaxcc
+bbb ccc
+bbxdxcc
+  ddd
+  ddd
+
+WindmillSudoku 5 9x9 sudokus
+ aaa
+ aaabbb
+ axxxbb
+ccxexbb
+ccxxxd
+cccddd
+   ddd
+
+FlowerSudoku 5 9x9 sudokus
+ aaa
+bxxxc
+bxxxc
+bxxxc
+ ddd
+
+CrossSudoku 5 9x9 sudokus
+  aaa
+  aaa
+bbxxxcc
+bbxexcc
+bbxxxcc
+  ddd
+  ddd
+
+AntiKnightAreaSudoku blocks cells in chess knight range
+..X.X..
+.X...X.
+...O...
+.X...X.
+..X.X..
+
+AntiKingAreaSudoku blocks cells in chess king range
+......
+.XXX..
+.XOX..
+.XXX..
+......
+
+NonConcecutive Sudoku blocks +/- 1 values up/down/right/left range
+..X..
+.XOX.
+..X..
+
+Special ExtraAreas when Sudoku size is 9x9
+X: sudokuX
+  a..  ...  ..b
+  .a.  ...  .b.
+  ..a  ...  b..
+
+  ...  a.b  ...
+  ...  .a.  ...
+  ...  b.a  ...
+
+  ..b  ...  a..
+  .b.  ...  .a.
+  b..  ...  ..a
+
+\: flash
+  a..  ...  ...
+  .a.  ...  ...
+  ..a  ...  ...
+
+  ...  a..  ...
+  ...  .a.  ...
+  ...  ..a  ...
+
+  ...  ...  a..
+  ...  ...  .a.
+  ...  ...  ..a
+
+/: slash
+  ...  ...  ..a
+  ...  ...  .a.
+  ...  ...  a..
+
+  ...  ..a  ...
+  ...  .a.  ...
+  ...  a..  ...
+
+  ..a  ...  ...
+  .a.  ...  ...
+  a..  ...  ...
+
+*: asterisk
+  ...  ...  ...
+  ...  .a.  ...
+  ..a  ...  a..
+
+  ...  ...  ...
+  .a.  .a.  .a.
+  ...  ...  ...
+
+  ..a  ...  a..
+  ...  .a.  ...
+  ...  ...  ...
+
+H: hypersudoku
+  ...  ...  ...
+  .aa  a.b  bb.
+  .aa  a.b  bb.
+
+  .aa  a.b  bb.
+  ...  ...  ...
+  .cc  c.d  dd.
+
+  .cc  c.d  dd.
+  .cc  c.d  dd.
+  ...  ...  ...
+
+O: offsetsudoku
+  abc  abc  abc
+  def  def  def
+  ghi  ghi  ghi
+
+  abc  abc  abc
+  def  def  def
+  ghi  ghi  ghi
+
+  abc  abc  abc
+  def  def  def
+  ghi  ghi  ghi
+
+C: centerdotsudoku
+  ...  ...  ...
+  .a.  .a.  .a.
+  ...  ...  ...
+
+  ...  ...  ...
+  .a.  .a.  .a.
+  ...  ...  ...
+
+  ...  ...  ...
+  .a.  .a.  .a.
+  ...  ...  ...
+
+G: girandolasudoku
+  a..  ...  ..a
+  ...  .a.  ...
+  ...  ...  ...
+
+  ...  ...  ...
+  .a.  .a.  .a.
+  ...  ...  ...
+
+  ...  ...  ...
+  ...  .a.  ...
+  a..  ...  ..a
+
+A: argylesudoku
+  .e.  .a.  .d.
+  h.e  a.f  d.b
+  .ha  e.d  fb.
+
+  .ah  .d.  bf.
+  a..  d.b  ..c
+  .gd  .b.  ec.
+
+  .dg  b.h  ce.
+  d.b  g.c  h.e
+  .b.  .c.  .h.

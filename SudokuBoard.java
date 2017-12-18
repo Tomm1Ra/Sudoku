@@ -5,8 +5,10 @@ import java.util.*;
 import java.io.File;
 
 public class SudokuBoard {
+    private Utilities utilities;
     private int exStart;
     private int ex3Start;
+    private int exLimit;
     private int boardSize;
     private int boardWidth;
     private int boxWidth;
@@ -17,11 +19,23 @@ public class SudokuBoard {
     HashSet<Integer> lines;
     HashSet<Integer> values;
     private ArrayList<HashSet<Integer>> optionsList;
+    private ArrayList<HashSet<Integer>> extraAreas;
+    private boolean isExtraAreas;
+    private int blockAreaType;
+    private boolean isBlockAreas;
+    private boolean isOverlap;
+    private StringBuilder sudokuPattern;
+    private String sudokuString;
 
     SudokuBoard(ArrayList<Integer> al) {
+        this.utilities = new Utilities(new HashSet<Integer>());
         this.freeSlots  = new HashSet<Integer>();
         this.solveBoardSize(al.size());
         this.board = new Integer[this.boardSize];
+        this.setExLimit(80); 
+        this.isExtraAreas = false;
+        this.isBlockAreas = false;
+        this.isOverlap = false;
         
         initTables();
         int index = 0;
@@ -34,15 +48,25 @@ public class SudokuBoard {
         }
     }
 
-    SudokuBoard(String s) {
-        sudokuCharSet = new ArrayList<>();
+    SudokuBoard(String s, boolean b) {
+        this.utilities = new Utilities(new HashSet<Integer>());
+        this.sudokuCharSet = new ArrayList<>();
+        this.sudokuPattern = new StringBuilder();
+        this.setExLimit(80);
+        this.isExtraAreas = false;
+        this.isBlockAreas = false;
+        this.setIsOverlap(b);
         if (s.startsWith("-")) {
             s = s.substring(1);
             s = s.replaceAll("\\s+", "");
             if (!s.contains("@")) {
-                for (Character c : "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
+                for (Character c : "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+".toCharArray()) {
                     sudokuCharSet.add(""+c);
                 }
+            }
+            if (s.contains(":")) {
+                this.sudokuPattern.append(s.substring(s.indexOf(":")));
+                s = s.substring(0, s.indexOf(":"));
             }
         } else {
             try {
@@ -72,7 +96,7 @@ public class SudokuBoard {
         if (s.contains("@")) {
             cSet = s.substring(s.indexOf("@")+1);
             if (cSet.length()==0) {
-                for (Character c : "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
+                for (Character c : "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+".toCharArray()) {
                     sudokuCharSet.add(""+c);
                 } 
             } else {
@@ -82,13 +106,18 @@ public class SudokuBoard {
             }
             s = s.substring(0, s.indexOf("@"));
         }
+        if (this.getIsOverlap()) {
+            setSudokuString(s.replaceAll("\\s+", "")); 
+            System.out.println("Overlap Sudoku");
+            return;
+        } 
         ArrayList<Integer> al = parseContent(s, sudokuCharSet);
         this.freeSlots  = new HashSet<Integer>();
         
         this.solveBoardSize(al.size());
         this.board = new Integer[this.boardSize];
         if (boardSize != al.size() || (sudokuCharSet.size() > 0 && sudokuCharSet.size() < boardWidth)) {
-            System.out.println("\n Invalid sudoku or charset size");
+            System.out.println("\n Invalid sudoku (" +al.size() +") or charset ("+sudokuCharSet.size()+") size " + boardSize);
             System.exit(0);
         }
         else {
@@ -101,13 +130,18 @@ public class SudokuBoard {
                 }
                 setCellValue(index++, value);
             }
-            if (!validateSudoku(al)) {
+            if (this.getSudokuPattern().length() < 1 && !validateSudoku(al)) {
                 System.out.print(dumpBoard());
                 System.out.println("\n\n Invalid sudoku");
                 System.exit(0);
             }
         }
     }
+
+    SudokuBoard(String s) {
+        this(s,false);
+    }
+
     private void solveBoardSize(int s) {
         this.boardWidth = (int)Math.sqrt(s);
         if (this.boxWidth == 0) {
@@ -143,6 +177,7 @@ public class SudokuBoard {
     }
     private void initTables() {
         this.optionsList = new ArrayList<HashSet<Integer>>();
+        this.extraAreas = new ArrayList<HashSet<Integer>>();
         lines = new HashSet<>();
         values = new HashSet<>();
         for (int i = 0 ; i < this.boardWidth; i++) {
@@ -169,6 +204,16 @@ public class SudokuBoard {
             int box = (cell / this.boardWidth)/boxHeigth*boxHeigth + (cell % this.boardWidth)/boxWidth;
             optionsList.get(cell).clear();
             removeOptions(value, cell/this.boardWidth, cell%this.boardWidth, box);
+        }
+        if (isExtraAreas) removeExtraAreaOptions(cell, value);
+        if (isBlockAreas) removeBlockAreaOptions(cell, value);
+    }
+
+    public void setCellValue(int cell, int value, HashSet<Integer> area) {
+        board[cell] = value;
+        if (value !=0) {
+            optionsList.get(cell).clear();
+            removeOptions(value, cell/this.boardWidth, cell%this.boardWidth, area);
         }
     }
 
@@ -213,8 +258,24 @@ public class SudokuBoard {
         return this.boxHeigth;
     }
 
+    public void setBoxWidth(int i) {
+        this.boxWidth = i;
+    }
+
+    public void setBoxHeigth(int i) {
+        this.boxHeigth = i;
+    }
+
     public Integer[] getBoard() {
         return this.board;
+    }
+
+    public String getSudokuString() {
+        return this.sudokuString;
+    }
+
+    public void setSudokuString(String s) {
+        this.sudokuString = s;
     }
 
     public HashSet<Integer> getOptions(int i) {
@@ -237,13 +298,56 @@ public class SudokuBoard {
         for (int i = 0 ; i < this.boardWidth ; i++) {
             this.removeOptions(r * this.boardWidth + i,  value);
             this.removeOptions(i * this.boardWidth + c,  value);
-            int y0 = (b/this.boxHeigth)*this.boxHeigth;
-            int x0 = (b%this.boxHeigth)*this.boxWidth;
-            for (int y = y0 ; y < (y0+this.boxHeigth); y++) {
-                for (int x = x0 ; x < (x0+this.boxWidth); x++) {
-                    this.removeOptions(y*this.boardWidth +x, value);
+        }
+        int y0 = (b/this.boxHeigth)*this.boxHeigth;
+        int x0 = (b%this.boxHeigth)*this.boxWidth;
+        for (int y = y0 ; y < (y0+this.boxHeigth); y++) {
+            for (int x = x0 ; x < (x0+this.boxWidth); x++) {
+                this.removeOptions(y*this.boardWidth +x, value);
+            }
+        }
+    }
+
+    public void removeOptions(int value, int r, int c, HashSet<Integer> area) {
+        for (int i = 0 ; i < this.boardWidth ; i++) {
+            this.removeOptions(r * this.boardWidth + i,  value);
+            this.removeOptions(i * this.boardWidth + c,  value);
+        }
+        for (int a: area) {
+            this.removeOptions(a, value);
+        }
+    }
+
+    public void removeExtraAreaOptions(int cell, int value) {
+        for (HashSet<Integer> a : extraAreas) {
+            if (a.contains(cell)) {
+                for (int areaCell : a) {
+                    this.removeOptions(areaCell, value);
                 }
             }
+        }
+    }
+
+    public void removeBlockAreaOptions(int cell, int value) {
+        switch (this.blockAreaType) {
+            case 1:
+                for (int a : utilities.getKingArea(cell, this.boardWidth)) {
+                    this.removeOptions(a, value);
+                }
+            break;
+            case 2:
+                for (int a : utilities.getKnightArea(cell, this.boardWidth)) {
+                    this.removeOptions(a, value);
+                }
+            break;
+            case 3:
+                for (int a : utilities.getCrossArea(cell, this.boardWidth)) {
+                    this.removeOptions(a, value-1);
+                    this.removeOptions(a, value+1);
+                }
+            break;
+            default:
+            break;
         }
     }
 
@@ -261,6 +365,54 @@ public class SudokuBoard {
 
     public void setEx3Start(int i){
         this.ex3Start = i;
+    }
+    
+    public int getExLimit(){
+        return exLimit;
+    }
+
+    public void setExLimit(int i){
+        this.exLimit = i;
+    }
+
+    public String getSudokuPattern(){
+        return this.sudokuPattern.toString();
+    }
+
+    public void setExtraArea(HashSet<Integer> area) {
+        this.isExtraAreas = true;
+        extraAreas.add(area);
+    }
+
+    public boolean getIsExtraAreas() {
+        return this.isExtraAreas;
+    }
+
+    public void setIsOverlap(boolean b) {
+        this.isOverlap = b;
+    }
+
+    public boolean getIsOverlap() {
+        return this.isOverlap;
+    }
+
+    public void setBlockArea(int blockAreaType) {
+        this.isBlockAreas = true;
+        this.blockAreaType = blockAreaType;
+    }
+
+    public String getCharSet() {
+        StringBuilder content = new StringBuilder();
+        if (!sudokuCharSet.isEmpty()) {
+            content.append("@");
+            String cs = sudokuCharSet.toString().replaceAll(",", "").replaceAll("\\[","").replaceAll("\\]","").replaceAll("\\s+", "");
+            content.append(cs);
+        }
+        return content.toString();
+    }
+
+    public ArrayList<HashSet<Integer>> getExtraAreas() {
+        return this.extraAreas;
     }
 
     public boolean validateSudoku(ArrayList<Integer> al) {
@@ -307,10 +459,22 @@ public class SudokuBoard {
                 int x = x0 + j%boxWidth;
                 if (!this.isFilled((y*boardWidth+x))) {emptyBox++; box.addAll(getOptions((y*boardWidth+x)));}
             }
-            for (int a = 1; a <= this.boardWidth ; a ++) {
-                if (row.size() != emptyRow) {System.out.println("Row "+(i+1)+" invalid "); returnValue = false;}
-                if (col.size() != emptyCol) {System.out.println("Col "+(i+1)+" invalid "); returnValue = false;}
-                if (box.size() != emptyBox) {System.out.println("Box "+(i+1)+" invalid "); returnValue = false;}
+            if (row.size() != emptyRow) {System.out.println("Row "+(i+1)+" invalid "); returnValue = false;}
+            if (col.size() != emptyCol) {System.out.println("Col "+(i+1)+" invalid "); returnValue = false;}
+            if (box.size() != emptyBox) {System.out.println("Box "+(i+1)+" invalid "); returnValue = false;}
+        }
+        return returnValue;
+    }
+
+    public boolean validateAreas() {
+        boolean returnValue = true;
+        for (HashSet<Integer> area : this.extraAreas) {
+            int[] values = new int[area.size()+1];
+            for (int j : area) {
+                if (!this.isFilled(j)) {values[this.board[j]]++;}
+            }
+            for (int k = 1; k <= area.size(); k++) {
+                if (values[k] > 1) {System.out.println("Area invalid "); returnValue = false;}
             }
         }
         return returnValue;
@@ -332,7 +496,30 @@ public class SudokuBoard {
                 boardAsString.append(board[i] != 0 ? ""+sudokuCharSet.get(board[i]-1) : ".");
             }
         }
+        boardAsString.append("\n");
         return boardAsString.toString();
+    }
+
+    public String dumpPattern() {
+        StringBuilder patternAsString = new StringBuilder();
+        patternAsString.append("\n  ");
+        String aCells = "abcdefghijklmnopqrstuvwxyz";
+        String area="";
+        for (int i = 0 ; i < this.board.length; i++) {
+            if (i > 0 && i % boxWidth == 0) patternAsString.append("  ");
+            if (i > 0 && i % boardWidth == 0) patternAsString.append("\n  ");
+            if (i > 0 && i % boardWidth == 0 && i % (boxHeigth*boardWidth) == 0 && boxHeigth> 1) patternAsString.append("\n  ");
+            area =".";
+            for (int n = 0; n < extraAreas.size(); n++) {
+                if (extraAreas.get(n).contains(i)) {
+                    area = aCells.substring(n, n+1);
+                    break;
+                }
+            }
+            patternAsString.append(area);
+        }
+        patternAsString.append("\n");
+        return patternAsString.toString();
     }
 
     private String readSudoku(String fileName) throws FileNotFoundException {
@@ -347,6 +534,8 @@ public class SudokuBoard {
                     if (fileReader.hasNext()) s = fileReader.nextLine();
                 } else if (s.startsWith("@") || s.startsWith("/"))  {
                     charSet.append(s);
+                } else if (s.startsWith(":"))  {
+                    sudokuPattern.append(s);
                 } else {
                     content.append(" ");
                     content.append(s);
@@ -384,7 +573,7 @@ public class SudokuBoard {
             content.append("@");
             String cs = charSet.toString().replaceAll(",", "").replaceAll("\\[","").replaceAll("\\]","").replaceAll("\\s+", "");
             content.append(cs.substring(0, Math.min(cs.length(),(int)Math.sqrt(values.size()))));
-            System.out.println("  "+content.toString().replaceAll(",", "").replaceAll("\\[","").replaceAll("\\]","").replaceAll("\\s+", "")+"\n");
+            //System.out.println("  "+content.toString().replaceAll(",", "").replaceAll("\\[","").replaceAll("\\]","").replaceAll("\\s+", "")+"\n");
         }
         for (int i = 0; i < values.size(); i++) {
             int c = 0;

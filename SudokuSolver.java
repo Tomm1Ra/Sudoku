@@ -154,7 +154,7 @@ public class SudokuSolver {
         return returnValue;
     }
 
-    private boolean hiddenRow(SudokuBoard board, int a, int z) {
+    public boolean hiddenRow(SudokuBoard board, int a, int z) {
         boolean returnValue = false;
         //int reductions = 0;
         for (int setSize = a ; setSize <= z ; setSize++) {
@@ -209,7 +209,7 @@ public class SudokuSolver {
         return returnValue;
     }
 
-    private boolean nakedRow(SudokuBoard board, int a, int z) {
+    public boolean nakedRow(SudokuBoard board, int a, int z) {
         boolean returnValue = false;
         //int reductions = 0;
         for (int setSize = a ; setSize <= z ; setSize++) {
@@ -260,7 +260,7 @@ public class SudokuSolver {
         return returnValue;
     }
 
-    private boolean hiddenColumn(SudokuBoard board, int a, int z) {
+    public boolean hiddenColumn(SudokuBoard board, int a, int z) {
         boolean returnValue = false;
         //int reductions = 0;
         for (int setSize = a ; setSize <= z ; setSize++) {
@@ -316,7 +316,7 @@ public class SudokuSolver {
         return returnValue;
     }
     
-    private boolean nakedColumn(SudokuBoard board, int a, int z) {
+    public boolean nakedColumn(SudokuBoard board, int a, int z) {
         boolean returnValue = false;
         //int reductions = 0;
         for (int setSize = a ; setSize <= z ; setSize++) {
@@ -516,6 +516,8 @@ public class SudokuSolver {
         boolean returnValue = false;
         int count = 0;
         int counter = 0;
+        ArrayList<Integer> cells = new ArrayList<Integer>();
+        ArrayList<Integer> values = new ArrayList<Integer>();
         for (int i: board.getFreeSlots()) {
             counter++;
             if (board.getExStart() > counter) continue;
@@ -538,9 +540,6 @@ public class SudokuSolver {
                 if (isExclusionReady(board, boardA)) return true;
                 exclusionSolve(boardB);
                 if (isExclusionReady(board, boardB)) return true;
-
-                ArrayList<Integer> cells = new ArrayList<Integer>();
-                ArrayList<Integer> values = new ArrayList<Integer>();
                 for ( int a : board.getFreeSlots() ) {
                     HashSet<Integer> blocks = new HashSet<Integer>();
                     for ( int m :board.getOptions(a)) {
@@ -565,13 +564,13 @@ public class SudokuSolver {
                         board.removeOptions(i, valueB);
                     }
                 }
-                if (cells.size()>0) System.out.print(":");
-                for (int b = 0;  b < cells.size(); b++) {
-                    board.setCellValue(cells.get(b), values.get(b));
-                    board.removeFreeSlots(cells.get(b));
-                }
             }
             if (count > 3) break;
+        }
+        for (int b = 0;  b < cells.size(); b++) {
+            if (b == 0) System.out.print(":");
+            board.setCellValue(cells.get(b), values.get(b));
+            board.removeFreeSlots(cells.get(b));
         }
         return returnValue;
     }
@@ -582,6 +581,8 @@ public class SudokuSolver {
         boolean returnValue = false;
         int count = 0;
         int counter = 0;
+        ArrayList<Integer> cells = new ArrayList<Integer>();
+        ArrayList<Integer> values = new ArrayList<Integer>();
         for (int i: board.getFreeSlots()) {
             counter++;
             if (board.getEx3Start() > counter) continue;
@@ -608,8 +609,7 @@ public class SudokuSolver {
                 if (isExclusionReady(board, boardB)) return true;
                 exclusionSolve(boardC);
                 if (isExclusionReady(board, boardC)) return true;
-                ArrayList<Integer> cells = new ArrayList<Integer>();
-                ArrayList<Integer> values = new ArrayList<Integer>();
+
                 for ( int a : board.getFreeSlots() ) {
                     HashSet<Integer> blocks = new HashSet<Integer>();
                     for ( int m :board.getOptions(a)) {
@@ -637,14 +637,15 @@ public class SudokuSolver {
                         board.removeOptions(i, valueC);
                     }
                 }
-                if (cells.size()>0) System.out.print(":");
-                for (int b = 0;  b < cells.size(); b++) {
-                    board.setCellValue(cells.get(b), values.get(b));
-                    board.removeFreeSlots(cells.get(b));
-                }
             }
             if (count > 5) break;
         }
+        for (int b = 0;  b < cells.size(); b++) {
+            if (b == 0) System.out.print(":");
+            board.setCellValue(cells.get(b), values.get(b));
+            board.removeFreeSlots(cells.get(b));
+        }
+
         if (counter == board.getFreeSlots().size() && returnValue == true) board.setEx3Start(0);
         return returnValue;
     }
@@ -722,6 +723,35 @@ public class SudokuSolver {
         return returnValue;
     }
 
+    private boolean hiddenSinglesArea(SudokuBoard board) {
+        boolean returnValue = false;
+        ArrayList<HashSet<Integer>> areas = board.getExtraAreas();
+        for (int area = 0; area < areas.size(); area++) {
+            int[] counts = new int[board.getBoardWidth()+1];
+            int[] cell = new int[board.getBoardWidth()+1];
+            if (areas.get(area).size() == board.getBoardWidth()) {
+                for (int c : areas.get(area)) {
+                    for (int j : board.getOptions(c)) {
+                        counts[j]++;
+                        cell[j] = c;
+                    }
+                }
+                for (int i = 1 ; i <= board.getBoardWidth() ; i++) {
+                    if (counts[i] == 1) {
+                        returnValue = true;
+                        int targetArea = 999;
+                        for (int a = 0 ; a < areas.size(); a++) {
+                            if (areas.get(a).contains(cell[i])) {targetArea = a;break;}
+                        }
+                        board.setCellValue(cell[i], i);
+                        board.removeFreeSlots(cell[i]);
+                    }
+                }
+            }
+        }
+        return returnValue;
+    }
+
     private boolean findSingles(SudokuBoard board) { 
         boolean returnValue = false;
         HashSet<Integer> free = new HashSet<Integer>();
@@ -739,6 +769,7 @@ public class SudokuSolver {
         returnValue = hiddenSinglesRow(board) || returnValue;
         returnValue = hiddenSinglesCol(board) || returnValue;
         returnValue = hiddenSinglesBox(board) || returnValue;
+        if (board.getIsExtraAreas()) returnValue = hiddenSinglesArea(board) || returnValue;
 
         return returnValue;
     }
@@ -749,7 +780,6 @@ public class SudokuSolver {
         if (index == s.length ) return true;
         
         if (s[index] !=0 ) return findSolution(s, index+1, bw , sh ,sw);
-
         HashSet<Integer> optionsForCell = utilities.getValues(s, y, x, box, bw, sh, sw);
         for (int option : optionsForCell) {
             s[index] = option;
@@ -757,6 +787,33 @@ public class SudokuSolver {
             else s[index] = 0;
         }
         return false;
+    } 
+    public void solve(SudokuBoard board) {
+        boolean cont = true;
+        int counter = 0;
+        int a = 2, z = 3;
+        while (cont) {
+            cont = false;
+            while (findSingles(board)) {System.out.print("*");}
+            System.out.print("*"+board.getFreeSlots().size());
+            if (!cont && board.getFreeSlots().size() > 0) {
+                cont = pointingPairs(board);
+                cont = boxLineReduction(board) || cont;
+                cont = nakedRow(board, a, z) || cont;
+                cont = nakedColumn(board, a, z) || cont;
+                cont = nakedBox(board, a, z) || cont; 
+                cont = hiddenRow(board, a, z) || cont;
+                cont = hiddenColumn(board, a, z) || cont;
+                cont = hiddenBox(board, a, z) || cont; 
+                a = 2; z = 3;
+                if (!cont) counter++;
+                if (!cont && counter % 5 == 1 ) {a = 4; z = 5;System.out.print("+");cont = true;}
+                if (!cont && board.getFreeSlots().size() > board.getExLimit()) {
+                    cont = exclusion(board);
+                    cont = cont || exclusion3(board);
+                }
+            }
+        }
     } 
 
     public static void main(String[] args)  {
@@ -766,32 +823,7 @@ public class SudokuSolver {
         SudokuSolver solver = new SudokuSolver(board.values);
         System.out.println("\n" + board.dumpBoard());
         System.out.println("  " + board.getFreeSlots().size() + " / " + board.getBoardSize()+"\n");
-        boolean cont = true;
-        int counter = 0;
-        int a = 2, z = 3;
-        while (cont) {
-            cont = false;
-            while (solver.findSingles(board)) {System.out.print("*");}
-            System.out.print("*"+board.getFreeSlots().size());
-            if (!cont && board.getFreeSlots().size() > 10) {
-                cont = solver.pointingPairs(board);
-                cont = solver.boxLineReduction(board) || cont;
-                cont = solver.nakedRow(board, a, z) || cont;
-                cont = solver.nakedColumn(board, a, z) || cont;
-                cont = solver.nakedBox(board, a, z) || cont; 
-                cont = solver.hiddenRow(board, a, z) || cont;
-                cont = solver.hiddenColumn(board, a, z) || cont;
-                cont = solver.hiddenBox(board, a, z) || cont; 
-                a = 2; z = 3;
-                if (!cont) counter++;
-                if (!cont && counter % 5 == 1 ) {a = 4; z = 5;System.out.print("+");cont = true;}
-                if (!cont && board.getFreeSlots().size() > 80) {
-                    cont = solver.exclusion(board);
-                    cont = cont || solver.exclusion3(board);
-                }
-            }
-            //if (board.getFreeSlots().size() < 40) cont = false;
-        }
+        solver.solve(board);
         if (board.getFreeSlots().size() > 0) {
             System.out.print("x");
             if (board.validateSudoku2()) {
