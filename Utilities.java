@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.IOException;
 
 
 public class Utilities {
@@ -94,5 +95,15 @@ public class Utilities {
         if (x+1 < size) hs.add(y*size + x+1);
         if (x-1 >= 0) hs.add(y*size + x-1);
         return hs;
+    }
+
+    public void pressAnykey( String s) {
+        System.out.println(s);
+        Scanner keyIn = new Scanner(System.in);
+        keyIn.nextLine();
+    }
+
+    public String printCell(int cell, int width) { 
+        return " ["+((cell/width)+1)+":"+((cell%width)+1)+"]";
     }
 }

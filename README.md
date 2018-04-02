@@ -31,6 +31,8 @@ Samurai4SudokuSolver
 SamuraiSudokuSolver
 WindmillSudokuSolver
 
+SudokuOptions shows valid options for each cell
+
 Sudoku class, only 9x9 sudoku, but more solving methods than in SudokuSolver.
 Usage :
 give file where unsolved sudoku is

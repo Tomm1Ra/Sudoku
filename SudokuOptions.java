@@ -3,16 +3,19 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.*;
 import java.io.File;
-import java.util.stream.Collectors;
 
-public class SudokuSolver {
+public class SudokuOptions {
     private Utilities utilities;
+    private boolean waitKey;
+    private boolean verbose;
     
-    public SudokuSolver(HashSet<Integer> values) {
+    public SudokuOptions(HashSet<Integer> values) {
         this.utilities = new Utilities(values);
+        this.waitKey = true;
+        this.verbose = false;
     }
 
-    private boolean boxLineReduction(SudokuBoard board) {
+    private boolean boxLineReduction(SudokuBoard board, boolean show) {
     boolean returnValue = false;
     //int reductions = 0;
     for (int row = 0 ; row < board.getBoardWidth() ; row++) {
@@ -39,6 +42,8 @@ public class SudokuSolver {
                                     board.removeOptions(y*board.getBoardWidth() + x, value);
                                     returnValue = true;
                                     //reductions++;
+                                    if (show)
+                                    System.out.println("Boxline reduction row " + this.utilities.printCell(y*board.getBoardWidth() + x, board.getBoardWidth()) +" " + board.getCellValueChar(value));
                                 }
                             }
                         }
@@ -72,6 +77,8 @@ public class SudokuSolver {
                                     board.removeOptions(y*board.getBoardWidth() + x, value);
                                     returnValue = true;
                                     //reductions++;
+                                    if (show)
+                                    System.out.println("Boxline reduction col " + this.utilities.printCell(y*board.getBoardWidth() + x, board.getBoardWidth()) +" " + board.getCellValueChar(value));
                                 }
                             }
                         }
@@ -84,7 +91,7 @@ public class SudokuSolver {
     return returnValue;
     }
 
-    private boolean pointingPairs(SudokuBoard board) {
+    private boolean pointingPairs(SudokuBoard board, boolean show) {
         boolean returnValue = false;
         //int reductions = 0;
         for (int yBox = 0 ; yBox < board.getBoardWidth() ; yBox=yBox+board.getBoxHeigth()) {
@@ -111,6 +118,8 @@ public class SudokuSolver {
                                         board.removeOptions(y*board.getBoardWidth() + x, value);
                                         returnValue = true;
                                         //reductions++;
+                                        if (show)
+                                        System.out.println("Pointing pairs row" + this.utilities.printCell(y*board.getBoardWidth() + x, board.getBoardWidth()) +" " + board.getCellValueChar(value));
                                     }
                                 }
                             }
@@ -143,6 +152,8 @@ public class SudokuSolver {
                                         board.removeOptions(y*board.getBoardWidth() + x, value);
                                         returnValue = true;
                                         //reductions++;
+                                        if (show)
+                                        System.out.println("Pointing pairs col " + this.utilities.printCell(y*board.getBoardWidth() + x, board.getBoardWidth()) +" " + board.getCellValueChar(value));
                                     }
                                 }
                             }
@@ -155,7 +166,7 @@ public class SudokuSolver {
         return returnValue;
     }
 
-    public boolean hiddenRow(SudokuBoard board, int a, int z) {
+    public boolean hiddenRow(SudokuBoard board, int a, int z, boolean show) {
         boolean returnValue = false;
         //int reductions = 0;
         for (int setSize = a ; setSize <= z ; setSize++) {
@@ -196,9 +207,20 @@ public class SudokuSolver {
                             blocks.removeAll(ts);
                             for (int r : hiddenCells) {
                                 if (!Collections.disjoint(board.getOptions(board.getBoardWidth()*row+r),blocks)) {
-                                    board.removeOptions(board.getBoardWidth()*row+r, blocks);
                                     //reductions++;
                                     returnValue = true; 
+                                    if (show) {
+                                        for (int b : blocks) {
+                                            ArrayList<Integer> hC = new ArrayList<Integer>();
+                                            for (int h : hiddenCells) hC.add(h+1);
+                                            if (board.getOptions(board.getBoardWidth()*row+r).contains(b)) {
+                                            System.out.println("Hidden row " + (row+1) + " Values:" +board.getValueChars(ts) + " cells:" + hC +
+                                                            this.utilities.printCell(board.getBoardWidth()*row+r, board.getBoardWidth()) +" " + 
+                                                            board.getCellValueChar(b));
+                                            }
+                                        }
+                                    }
+                                    board.removeOptions(board.getBoardWidth()*row+r, blocks);
                                 }    
                             }
                         }
@@ -210,7 +232,7 @@ public class SudokuSolver {
         return returnValue;
     }
 
-    public boolean nakedRow(SudokuBoard board, int a, int z) {
+    public boolean nakedRow(SudokuBoard board, int a, int z, boolean show) {
         boolean returnValue = false;
         //int reductions = 0;
         for (int setSize = a ; setSize <= z ; setSize++) {
@@ -248,6 +270,13 @@ public class SudokuSolver {
                                             board.removeOptions(board.getBoardWidth()*row+r, cellCandidate);
                                             //reductions++;
                                             returnValue = true; 
+                                            if (show) {
+                                                ArrayList<Integer> nS = new ArrayList<Integer>();
+                                                for (int n : ts) nS.add(n+1);
+                                                System.out.println("Naked row " +  (row+1) + " Values" + board.getValueChars(nakedSet) + " Cells" +nS +
+                                                                    this.utilities.printCell(board.getBoardWidth()*row+r, board.getBoardWidth()) +" " + 
+                                                                    board.getCellValueChar(cellCandidate));
+                                            }
                                         }
                                     }
                                 }
@@ -261,7 +290,7 @@ public class SudokuSolver {
         return returnValue;
     }
 
-    public boolean hiddenColumn(SudokuBoard board, int a, int z) {
+    public boolean hiddenColumn(SudokuBoard board, int a, int z, boolean show) {
         boolean returnValue = false;
         //int reductions = 0;
         for (int setSize = a ; setSize <= z ; setSize++) {
@@ -303,9 +332,20 @@ public class SudokuSolver {
                             blocks.removeAll(ts); 
                             for (int r : hiddenCells) {
                                 if (!Collections.disjoint(board.getOptions(board.getBoardWidth()*r+column),blocks)) {
-                                    board.removeOptions(board.getBoardWidth()*r + column, blocks);
                                     //reductions++;
                                     returnValue = true; 
+                                    if (show) {
+                                        for (int b : blocks) {
+                                            ArrayList<Integer> hC = new ArrayList<Integer>();
+                                            for (int h : hiddenCells) hC.add(h+1);
+                                            if (board.getOptions(board.getBoardWidth()*r+column).contains(b)) {
+                                                System.out.println("Hidden col " + (column+1) + " Values:" + board.getValueChars(ts) + " cells:" + hC +
+                                                            this.utilities.printCell(board.getBoardWidth()*r+column, board.getBoardWidth()) +" " + 
+                                                            board.getCellValueChar(b));
+                                            }
+                                        }
+                                    }
+                                    board.removeOptions(board.getBoardWidth()*r + column, blocks);
                                 }
                             }
                         }
@@ -317,7 +357,7 @@ public class SudokuSolver {
         return returnValue;
     }
     
-    public boolean nakedColumn(SudokuBoard board, int a, int z) {
+    public boolean nakedColumn(SudokuBoard board, int a, int z, boolean show) {
         boolean returnValue = false;
         //int reductions = 0;
         for (int setSize = a ; setSize <= z ; setSize++) {
@@ -352,6 +392,13 @@ public class SudokuSolver {
                                             board.removeOptions(board.getBoardWidth()*r+column, cellCandidate);
                                             //reductions++;
                                             returnValue = true; 
+                                            if (show) {
+                                                ArrayList<Integer> nS = new ArrayList<Integer>();
+                                                for (int n : ts) nS.add(n+1);
+                                                System.out.println("Naked col " +  (column+1) + " Values" + board.getValueChars(nakedSet) + " Cells" +nS +
+                                                                    this.utilities.printCell(board.getBoardWidth()*r+column, board.getBoardWidth()) +" " + 
+                                                                    board.getCellValueChar(cellCandidate));
+                                            }
                                         }
                                     }
                                 }
@@ -365,10 +412,10 @@ public class SudokuSolver {
         return returnValue;
     }    
 
-    private boolean hiddenBox(SudokuBoard board, int a, int z) {
+    private boolean hiddenBox(SudokuBoard board, int a, int z, boolean show) {
         boolean returnValue = false;
         //int reductions = 0;
-        for (int setSize = a ; setSize <= z ; setSize++) {
+        for (int setSize = a ; setSize < z+1 ; setSize++) {
             for ( int row = 0 ;row < board.getBoardWidth() ; row=row+board.getBoxHeigth()) {
                 for ( int column = 0 ;column < board.getBoardWidth() ; column=column+board.getBoxWidth()) {
                     int vaaka = (row/board.getBoxHeigth())*board.getBoxHeigth();
@@ -414,9 +461,21 @@ public class SudokuSolver {
                                 blocks.removeAll(ts);
                                 for (int r : hiddenCells) {
                                     if (!Collections.disjoint(board.getOptions(r), blocks)) {
-                                        board.removeOptions(r, blocks);
                                         //reductions++;
                                         returnValue = true; 
+                                        if (show) {
+                                            for (int b : blocks) {
+                                                ArrayList<Integer> hC = new ArrayList<Integer>();
+                                                for (int h : hiddenCells) 
+                                                hC.add((h/board.getBoardWidth())%board.getBoxHeigth()*board.getBoxWidth()+h%board.getBoxWidth()+1);
+                                                if (board.getOptions(r).contains(b)) {
+                                                    System.out.println("Hidden box " + board.getBox(r) + " Values:" + board.getValueChars(ts) + " cells:" + hC +
+                                                                this.utilities.printCell(r, board.getBoardWidth()) +" " + 
+                                                                board.getCellValueChar(b));
+                                                }
+                                            }
+                                        }
+                                        board.removeOptions(r, blocks);
                                     }
                                 }
                             }
@@ -429,11 +488,11 @@ public class SudokuSolver {
         return returnValue;
     }       
    
-    private boolean nakedBox(SudokuBoard board, int a, int z) {
+    private boolean nakedBox(SudokuBoard board, int a, int z, boolean show) {
         boolean returnValue = false;
         //int reductions = 0;
-        for (int setSize = a ; setSize <= z ; setSize++) {
-            for ( int row = 0 ; row < board.getBoardWidth() ; row=row+board.getBoxHeigth()) {
+        for (int setSize = a ; setSize < z+1 ; setSize++) {
+            for ( int row = 0 ;row < board.getBoardWidth() ; row=row+board.getBoxHeigth()) {
                 for ( int column = 0 ;column < board.getBoardWidth() ; column=column+board.getBoxWidth()) {
                     int vaaka = (row/board.getBoxHeigth())*board.getBoxHeigth();
                     int pysty = (column/board.getBoxWidth())*board.getBoxWidth();
@@ -472,6 +531,13 @@ public class SudokuSolver {
                                                 board.removeOptions(r, cellCandidate);
                                                 //reductions++;
                                                 returnValue = true; 
+                                                if (show) {
+                                                    ArrayList<Integer> nS = new ArrayList<Integer>();
+                                                    for (int n : ts) nS.add((n/board.getBoardWidth())%board.getBoxHeigth()*board.getBoxWidth()+n%board.getBoxWidth()+1);
+                                                    System.out.println("Naked box " +  board.getBox(r) + " Values" + board.getValueChars(nakedSet) + " Cells" +nS +
+                                                                        this.utilities.printCell(r, board.getBoardWidth()) +" " + 
+                                                                        board.getCellValueChar(cellCandidate));
+                                                }
                                             }
                                         }
                                     }
@@ -489,15 +555,15 @@ public class SudokuSolver {
         boolean cont = true;
         while(cont) { 
             cont=false;
-            while (findSingles(board))  {}
-            cont = boxLineReduction(board) || cont;
-            cont = pointingPairs(board) || cont;
-            cont = nakedRow(board, 2,3) || cont;
-            cont = nakedColumn(board, 2,3) || cont;
-            cont = nakedBox(board, 2,3) || cont;
-            cont = hiddenRow(board, 2,3) || cont;
-            cont = hiddenColumn(board, 2,3) || cont;
-            cont = hiddenBox(board, 2,3) || cont;
+            while (findSingles(board, false)!=0)  {}
+            cont = boxLineReduction(board, false) || cont;
+            cont = pointingPairs(board, false) || cont;
+            cont = nakedRow(board, 2,3, false) || cont;
+            cont = nakedColumn(board, 2,3, false) || cont;
+            cont = nakedBox(board, 2,3, false) || cont;
+            cont = hiddenRow(board, 2,3, false) || cont;
+            cont = hiddenColumn(board, 2,3, false) || cont;
+            cont = hiddenBox(board, 2,3, false) || cont;
         }
     }
     private boolean isExclusionReady(SudokuBoard board, SudokuBoard boardE) {
@@ -512,19 +578,16 @@ public class SudokuSolver {
         return returnValue;
     }
 
-        private boolean exclusion(SudokuBoard board, int ops) {
-        if (ops > 3 && board.getBoardWidth() > 16) return false;
-        System.out.print("e");
+    private boolean exclusion(SudokuBoard board, int ops) {
+        System.out.print("_"+ops);
         boolean returnValue = false;
         int count = 0;
         int counter = 0;
         ArrayList<Integer> cells = new ArrayList<Integer>();
         ArrayList<Integer> values = new ArrayList<Integer>();
-        ArrayList<Integer> freeCells = board.getFreeSlots().stream().filter(l -> board.getOptions(l).size() == ops).collect(Collectors.toCollection(ArrayList::new));
-        //System.out.print("f:"+freeCells.size());
-        for (int i: freeCells) {
+        for (int i: board.getFreeSlots()) {
             counter++;
-            if (ops == 2) if (board.getExStart() >= counter) continue;
+            if (ops == 2) if (board.getExStart() > counter) continue;
             if (board.getOptions(i).size() ==  ops) {
                 if (ops == 2) board.setExStart(counter); else board.setExStart(0);
                 ArrayList<SudokuBoard> boards = new ArrayList<SudokuBoard>();
@@ -543,15 +606,22 @@ public class SudokuSolver {
                 }
                 for (int a = 0 ; a < ops ; a++) {
                     exclusionSolve(boards.get(a));
-                    if (isExclusionReady(board, boards.get(a))) return true;
+                    if (isExclusionReady(board, boards.get(a))) { 
+                        System.out.println("\nExclusion "+ops+" Sudoku Ready " + this.utilities.printCell(i,  board.getBoardWidth()) +" " 
+                            + board.getCellValueChar(boards.get(a).getCellValue(i)));
+                        return true;
+                    }
                 }
 
                 for ( int a : board.getFreeSlots() ) {
                     HashSet<Integer> blocks = new HashSet<Integer>();
                     for ( int m :board.getOptions(a)) {
-                        if (boards.stream().allMatch(b -> b.getCellValue(a) != m) && boards.stream().noneMatch(b -> b.getOptions(a).contains(m))) {
+                        boolean r1 = boards.stream().allMatch(b -> b.getCellValue(a) != m);
+                        boolean r2 = boards.stream().noneMatch(b -> b.getOptions(a).contains(m));
+                        if (r1 && r2) {
+                            returnValue = true;
                             blocks.add(m);
-                            if (count < 7) System.out.print(".");
+                            if (count < 5) System.out.print(".");
                             count++;
                         }
                     }
@@ -560,36 +630,43 @@ public class SudokuSolver {
                         if (boards.stream().allMatch(b -> b.getCellValue(a) == refValue)) {
                             cells.add(a);
                             values.add(refValue);
+                            returnValue = true;
                             count=count+3;
                         }
                     }
+                    
                     for (int x : blocks) {
                         if (board.getOptions(a).contains(x)) {
                             board.removeOptions(a, x);
+                            System.out.println("Exclusion"+ops+" remove option " + this.utilities.printCell(a,  board.getBoardWidth()) +" " 
+                            + board.getCellValueChar(x));
                         }
                     }
                     for (int b = 0 ; b < ops ; b++) {
                         if (!boards.get(b).isFilled(a) && boards.get(b).getOptions(a).isEmpty()) {
                             board.removeOptions(i, boards.get(b).getCellValue(i));
+                            returnValue = true;
                             count++;
+                            System.out.println("Exclusion"+ops+" remove option " + this.utilities.printCell(a,  board.getBoardWidth()) +" " 
+                            + board.getCellValueChar(boards.get(b).getCellValue(i)));
                         }
                     }
                 }
             }
-            if (count > 6) break;
+            if (count > 20) break;
         }
-        if (count > 0) returnValue = true;
         for (int b = 0;  b < cells.size(); b++) {
             if (b == 0) System.out.print(":");
             board.setCellValue(cells.get(b), values.get(b));
             board.removeFreeSlots(cells.get(b));
+            System.out.println("Exclusion"+ops+" set cell value " + this.utilities.printCell(cells.get(b),  board.getBoardWidth()) +" " 
+            + board.getCellValueChar(values.get(b)));
         }
         return returnValue;
     }
 
-
-    private boolean hiddenSinglesRow(SudokuBoard board) {
-        boolean returnValue = false;
+    private int hiddenSinglesRow(SudokuBoard board, boolean show) {
+        int returnValue = 0;
         for (int row = 0; row < board.getBoardWidth(); row++) {
             int[] counts = new int[board.getBoardWidth()+1];
             int[] cell = new int[board.getBoardWidth()+1];
@@ -601,17 +678,25 @@ public class SudokuSolver {
             }
             for (int i = 1 ; i <= board.getBoardWidth() ; i++) {
                 if (counts[i] == 1) {
-                    returnValue = true;
+                    returnValue++;
                     board.setCellValue(row*board.getBoardWidth()+cell[i], i);
                     board.removeFreeSlots(row*board.getBoardWidth()+cell[i]);
+                    if (show) {
+                        System.out.println("Hidden singles row " + this.utilities.printCell(row*board.getBoardWidth()+cell[i],  board.getBoardWidth()) +" " 
+                        + board.getCellValueChar(i));
+                        if (verbose) {
+                            board.showOptions();
+                            if (waitKey) utilities.pressAnykey("Press Enter to continue");
+                        }
+                    }
                 }
             }
         }
         return returnValue;
     }
 
-    private boolean hiddenSinglesCol(SudokuBoard board) {
-        boolean returnValue = false;
+    private int hiddenSinglesCol(SudokuBoard board, boolean show) {
+        int returnValue = 0;
         for (int col = 0; col < board.getBoardWidth(); col++) {
             int[] counts = new int[board.getBoardWidth()+1];
             int[] cell = new int[board.getBoardWidth()+1];
@@ -623,17 +708,24 @@ public class SudokuSolver {
             }
             for (int i = 1 ; i <= board.getBoardWidth() ; i++) {
                 if (counts[i] == 1) {
-                    returnValue = true;
+                    returnValue++;
                     board.setCellValue(cell[i]*board.getBoardWidth()+col, i);
                     board.removeFreeSlots(cell[i]*board.getBoardWidth()+col);
+                    if (show) {
+                        System.out.println("Hidden singles col " + this.utilities.printCell(cell[i]*board.getBoardWidth()+col, board.getBoardWidth()) +" " + board.getCellValueChar(i));
+                        if (verbose) {
+                            board.showOptions();
+                            if (waitKey) utilities.pressAnykey("Press Enter to continue");
+                        }
+                    }
                 }
             }
         }
         return returnValue;
     }
 
-    private boolean hiddenSinglesBox(SudokuBoard board) {
-        boolean returnValue = false;
+    private int hiddenSinglesBox(SudokuBoard board, boolean show) {
+        int returnValue = 0;
         for ( int row = 0 ; row < board.getBoardWidth() ; row=row+board.getBoxHeigth()) {
             for ( int col = 0 ;col < board.getBoardWidth() ; col=col+board.getBoxWidth()) {
                 int r1 = (row/board.getBoxHeigth())*board.getBoxHeigth();
@@ -650,9 +742,16 @@ public class SudokuSolver {
                 }
                 for (int i = 1 ; i <= board.getBoardWidth() ; i++) {
                     if (counts[i] == 1) {
-                        returnValue = true;
+                        returnValue++;
                         board.setCellValue(cell[i], i);
                         board.removeFreeSlots(cell[i]);
+                        if (show) {
+                            System.out.println("Hidden singles box " + this.utilities.printCell(cell[i], board.getBoardWidth()) +" " + board.getCellValueChar(i));
+                            if (verbose) {
+                                board.showOptions();
+                                if (waitKey) utilities.pressAnykey("Press Enter to continue");
+                            }
+                        }
                     }
                 }
             }
@@ -660,8 +759,8 @@ public class SudokuSolver {
         return returnValue;
     }
 
-    private boolean hiddenSinglesArea(SudokuBoard board) {
-        boolean returnValue = false;
+    private int hiddenSinglesArea(SudokuBoard board, boolean show) {
+        int returnValue = 0;
         ArrayList<HashSet<Integer>> areas = board.getExtraAreas();
         for (int area = 0; area < areas.size(); area++) {
             int[] counts = new int[board.getBoardWidth()+1];
@@ -675,13 +774,20 @@ public class SudokuSolver {
                 }
                 for (int i = 1 ; i <= board.getBoardWidth() ; i++) {
                     if (counts[i] == 1) {
-                        returnValue = true;
+                        returnValue++;
                         int targetArea = 999;
                         for (int a = 0 ; a < areas.size(); a++) {
                             if (areas.get(a).contains(cell[i])) {targetArea = a;break;}
                         }
                         board.setCellValue(cell[i], i);
                         board.removeFreeSlots(cell[i]);
+                        if (show) {
+                            System.out.println("Extra area single " + this.utilities.printCell(cell[i], board.getBoardWidth()) +" " + board.getCellValueChar(i));
+                            if (verbose) {
+                                board.showOptions();
+                                if (waitKey) utilities.pressAnykey("Press Enter to continue");
+                            }
+                        }
                     }
                 }
             }
@@ -689,43 +795,35 @@ public class SudokuSolver {
         return returnValue;
     }
 
-    private boolean findSingles(SudokuBoard board) { 
-        boolean returnValue = false;
+    private int findSingles(SudokuBoard board, boolean show) { 
+        int returnValue = 0;
         HashSet<Integer> free = new HashSet<Integer>();
         for (int slot : board.getFreeSlots()) {
             if (!board.isFilled(slot)) {
                 HashSet<Integer> hs = board.getOptions(slot);
                 if (hs.size() == 1) {
-                    board.setCellValue(slot, (int)hs.toArray()[0]);
-                    returnValue = true;
+                    int value = (int)hs.toArray()[0];
+                    board.setCellValue(slot, value);
+                    if (show) {
+                        System.out.println("Naked single " + this.utilities.printCell(slot, board.getBoardWidth()) +" " + board.getCellValueChar(value));
+                        if (verbose) {
+                            board.showOptions();
+                            if (waitKey) utilities.pressAnykey("Press Enter to continue");
+                        }
+                    }
+                    returnValue++;
                     free.add(slot);
                 }
             }
         }
         board.removeFreeSlots(free);
-        returnValue = hiddenSinglesRow(board) || returnValue;
-        returnValue = hiddenSinglesCol(board) || returnValue;
-        returnValue = hiddenSinglesBox(board) || returnValue;
-        if (board.getIsExtraAreas()) returnValue = hiddenSinglesArea(board) || returnValue;
+        returnValue = hiddenSinglesRow(board, show) + returnValue;
+        returnValue = hiddenSinglesCol(board, show) + returnValue;
+        returnValue = hiddenSinglesBox(board, show) + returnValue;
+        if (board.getIsExtraAreas()) returnValue = hiddenSinglesArea(board, show) + returnValue;
 
         return returnValue;
     }
-     private boolean findSolution(Integer[] s, int index, int bw, int sh, int sw) {
-        int y = index / bw;
-        int x = index % bw;
-        int box = y/sh*sh + x/sw;
-        if (index == s.length ) return true;
-        
-        if (s[index] !=0 ) return findSolution(s, index+1, bw , sh ,sw);
-        HashSet<Integer> optionsForCell = utilities.getValues(s, y, x, box, bw, sh, sw);
-        for (int option : optionsForCell) {
-            s[index] = option;
-            if (findSolution(s, index+1, bw, sh, sw)) return true;
-            else s[index] = 0;
-        }
-        return false;
-    } 
-
      private boolean findSolution(Integer[] s, int index, int bw, int sh, int sw,  ArrayList<HashSet<Integer>> as) {
         int y = index / bw;
         int x = index % bw;
@@ -748,37 +846,62 @@ public class SudokuSolver {
             else s[index] = 0;
         }
         return false;
-    }
+    } 
 
-    public void solve(SudokuBoard board) {
-        boolean cont = true;
+    public void solveWithOptions(SudokuBoard board, String line2) {
+        boolean cont = true, reduceOptions=false;
         boolean useExtra = true;
         int a = 2, z = 3;
-        if (board.getBoardWidth() > 9) board.setExLimit(70); else board.setExLimit(20);
+        line2 = line2.toUpperCase();
+        if (line2.contains("F")) waitKey = false;
+        if (line2.contains("V")) verbose = true;
+
         while (cont) {
+            board.showOptions();
+            if (waitKey) utilities.pressAnykey("Press Enter to continue");
             cont = false;
-            while (findSingles(board)) {System.out.print("*");}
+            while (findSingles(board, true)!=0) {
+                System.out.println("*Singles found");
+                board.showOptions();
+                if (waitKey) utilities.pressAnykey("Press Enter to continue");
+            }
             System.out.print("*"+board.getFreeSlots().size());
             if (!cont && board.getFreeSlots().size() > 0) {
-                cont = pointingPairs(board);
-                cont = boxLineReduction(board) || cont;
-                cont = nakedRow(board, a, z) || cont;
-                cont = nakedColumn(board, a, z) || cont;
-                cont = nakedBox(board, a, z) || cont; 
-                cont = hiddenRow(board, a, z) || cont;
-                cont = hiddenColumn(board, a, z) || cont;
-                cont = hiddenBox(board, a, z) || cont;
+                reduceOptions = pointingPairs(board, true);
+                if (reduceOptions) System.out.println("Pointing pair(s) found");
+                cont = reduceOptions || cont;
+                reduceOptions = boxLineReduction(board, true);
+                if (reduceOptions) System.out.println("Box line reduction(s) found");
+                cont = reduceOptions || cont;
+                reduceOptions = nakedRow(board, a, z, true) ;
+                if (reduceOptions) System.out.println("Naked row(s) found");
+                cont = reduceOptions || cont;
+                reduceOptions = nakedColumn(board, a, z, true);
+                if (reduceOptions) System.out.println("Naked column(s) found");
+                cont = reduceOptions || cont;
+                reduceOptions = nakedBox(board, a, z, true); 
+                if (reduceOptions) System.out.println("Naked box(s) found");
+                cont = reduceOptions || cont;
+                reduceOptions = hiddenRow(board, a, z, true);
+                if (reduceOptions) System.out.println("Hidden row(s) found");
+                cont = reduceOptions || cont;
+                reduceOptions = hiddenColumn(board, a, z, true);
+                if (reduceOptions) System.out.println("Hidden column(s) found");
+                cont = reduceOptions || cont;
+                reduceOptions = hiddenBox(board, a, z, true); 
+                if (reduceOptions) System.out.println("Hidden box(s) found");
+                cont = reduceOptions || cont;
                 if (board.getFreeSlots().size() > board.getExLimit()) {
                     if (!cont && useExtra) {
                         a = 4; z = 5;
                         useExtra = false; 
                         System.out.print("+"); 
-                        cont = nakedRow(board, a, z) || cont;
-                        cont = nakedColumn(board, a, z) || cont;
-                        cont = nakedBox(board, a, z) || cont; 
-                        cont = hiddenRow(board, a, z) || cont;
-                        cont = hiddenColumn(board, a, z) || cont;
-                        cont = hiddenBox(board, a, z) || cont; 
+                        cont = nakedRow(board, a, z, true) || cont;
+                        cont = nakedColumn(board, a, z, true) || cont;
+                        cont = nakedBox(board, a, z, true) || cont; 
+                        cont = hiddenRow(board, a, z, true) || cont;
+                        cont = hiddenColumn(board, a, z, true) || cont;
+                        cont = hiddenBox(board, a, z, true) || cont; 
                         if (cont) System.out.print("+"); 
                         a = 2; z = 3;
                     }
@@ -786,6 +909,7 @@ public class SudokuSolver {
                         int i = 2; 
                         while (i < board.getBoardWidth() && !cont) {
                             cont = exclusion(board, i) || cont;
+                            if (cont) System.out.print("Exclusion "+i+" reduction(s)"); 
                             i++;
                         }
                     }
@@ -796,27 +920,28 @@ public class SudokuSolver {
 
     public static void main(String[] args)  {
         String line = args[0];
+        String line2 = "";
+        if (args.length > 1) line2 = args[1];
         long startTime = System.currentTimeMillis();
         SudokuBoard board = new SudokuBoard(line);
-        SudokuSolver solver = new SudokuSolver(board.values);
+        SudokuOptions solver = new SudokuOptions(board.values);
         ExtraAreaSudokuSolver areaSolver = new ExtraAreaSudokuSolver(board.values);
         System.out.println("\n" + board.dumpBoard());
         System.out.println("  " + board.getFreeSlots().size() + " / " + board.getBoardSize()+"\n");
+        board.setExLimit(0); 
         areaSolver.parseAreas(board);
-        if (areaSolver.getAreaSets().size() > 0) {
-            for (int n = 0 ; n <  areaSolver.getAreaSets().size() ; n++) {
-                board.setExtraArea(areaSolver.getAreaSets().get(n));
-                for (int a: areaSolver.getAreaSets().get(n)) {
-                    if (board.isFilled(a)) board.setCellValue(a,board.getCellValue(a));
-                }
+        for (int n = 0 ; n < areaSolver.getAreaSets().size() ; n++) {
+            board.setExtraArea(areaSolver.getAreaSets().get(n));
+            for (int a: areaSolver.getAreaSets().get(n)) {
+                if (board.isFilled(a)) board.setCellValue(a,board.getCellValue(a));
             }
-            System.out.println("\n" + board.dumpPattern());
         }
-        solver.solve(board);
+
+        solver.solveWithOptions(board, line2);
         if (board.getFreeSlots().size() > 0) {
             System.out.print("x");
             if (board.validateSudoku2()) {
-                solver.findSolution(board.getBoard(), 0, board.getBoardWidth(), board.getBoxHeigth(), board.getBoxWidth(), areaSolver.getAreaSets());  
+                solver.findSolution(board.getBoard(), 0, board.getBoardWidth(), board.getBoxHeigth(), board.getBoxWidth(), areaSolver.getAreaSets()); 
             }
         }
         System.out.println("\n\n" + board.dumpBoard());

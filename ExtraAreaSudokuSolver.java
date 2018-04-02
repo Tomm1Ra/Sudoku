@@ -8,6 +8,10 @@ public class ExtraAreaSudokuSolver {
     private HashSet<Integer> xTopLeftToBottomRight;
     private HashSet<Integer> xBottomLeftToTopRight;
     
+    public ArrayList<HashSet<Integer>> getAreaSets() {
+        return areaSets;
+    }
+
     public ExtraAreaSudokuSolver(HashSet<Integer> values) {
         this.utilities = new Utilities(values);
         areaSets = new ArrayList<HashSet<Integer>>();
@@ -197,12 +201,12 @@ public class ExtraAreaSudokuSolver {
                     this.setOffsetAreas(board);
                 break;
                 case "G" :
-                System.out.println("G"); 
-                this.setGirandolaArea(size);
+                    System.out.println("G"); 
+                    this.setGirandolaArea(size);
                 break;
                 case "A" :
-                System.out.println("A"); 
-                this.setArgyleArea(size);
+                    System.out.println("A"); 
+                    this.setArgyleArea(size);
                 break;
             }
             s = s.substring(1);

@@ -32,7 +32,7 @@ public class SudokuBoard {
         this.freeSlots  = new HashSet<Integer>();
         this.solveBoardSize(al.size());
         this.board = new Integer[this.boardSize];
-        this.setExLimit(80); 
+        this.setExLimit(30); 
         this.isExtraAreas = false;
         this.isBlockAreas = false;
         this.isOverlap = false;
@@ -52,7 +52,7 @@ public class SudokuBoard {
         this.utilities = new Utilities(new HashSet<Integer>());
         this.sudokuCharSet = new ArrayList<>();
         this.sudokuPattern = new StringBuilder();
-        this.setExLimit(80);
+        this.setExLimit(30);
         this.isExtraAreas = false;
         this.isBlockAreas = false;
         this.setIsOverlap(b);
@@ -223,6 +223,13 @@ public class SudokuBoard {
 
     public int getCellValue(int cell) {
         return board[cell];
+    }
+
+    public String getCellValueChar(int i) {
+        if (sudokuCharSet.isEmpty()) {
+            return ""+i;
+        } else
+        return sudokuCharSet.get(i-1);
     }
 
     public ArrayList<Integer> getAllValues() {
@@ -417,6 +424,12 @@ public class SudokuBoard {
 
     public boolean validateSudoku(ArrayList<Integer> al) {
         boolean returnValue = true;
+        for (int a : al) {
+            if (a > boardWidth) {
+                System.out.println("Invalid value vs CharSet");
+                return false;
+            }
+        }
         for (int i = 0 ; i < this.boardWidth ; i++) {
             int[]  row = new int[boardWidth+1];
             int[]  col = new int[boardWidth+1];
@@ -590,6 +603,116 @@ public class SudokuBoard {
             s.add(c);
         }
         return s;
+    }
+    
+    private String getOptionsOutput(int row, int boxRow, int col) {
+        StringBuilder returnString = new StringBuilder();
+        
+        for (int value = boxRow*this.getBoxWidth()+1 ; value < boxRow*this.getBoxWidth()+this.getBoxWidth()+1 ; value++) {
+            if (this.optionsList.get(row*this.getBoardWidth() + col ).contains(value)) {
+                returnString.append(this.sudokuCharSet.get(value-1));
+                returnString.append("");
+            } else returnString.append(" ");
+        }
+        if ((col+1)%this.boxWidth==0) returnString.append("| "); else returnString.append(". "); 
+        if (this.optionsList.get(row*this.getBoardWidth() + col ).isEmpty()) {
+            returnString = new StringBuilder();
+            if (this.getBoxWidth() < 4) {
+                for (int t=0; t < this.getBoxWidth(); t++) {
+                        if ((this.board[row*this.boardWidth + col]-1) != -1)
+                            returnString.append(this.sudokuCharSet.get(this.board[row*this.boardWidth + col]-1));
+                        else 
+                            returnString.append("-");
+                }
+            } else {
+                returnString.append(" ");
+                for (int t=0; t < this.getBoxWidth()-2; t++) {
+                    if (boxRow==0 || boxRow==this.boxHeigth-1) {
+                        returnString.append(" ");
+                    } else {
+                        returnString.append(this.sudokuCharSet.get(this.board[row*this.boardWidth + col]-1));
+                    }
+                }
+            returnString.append(" ");
+            }
+            if ((col+1)%this.boxWidth==0) returnString.append("| "); else returnString.append(". ");
+        }
+       
+        return returnString.toString();
+    }
+
+    public void showOptions() {
+        System.out.println();
+        if (!sudokuCharSet.isEmpty() || this.getBoardWidth() < 10) {
+        if (sudokuCharSet.isEmpty())  sudokuCharSet = new ArrayList<String>(Arrays.asList("1","2","3","4","5","6","7","8","9"));
+        System.out.print("+-");
+        for (int a = 0 ; a < this.getBoardWidth() ; a++) {
+            for (int b = 0 ; b < this.getBoxWidth(); b++) {
+                System.out.print("-");
+            }
+            System.out.print("+-");
+        }
+        System.out.println();
+        
+        for (int row = 0 ; row < this.getBoardWidth() ; row ++) {
+            
+            for (int boxRow = 0 ; boxRow < this.getBoxHeigth() ; boxRow ++) {
+                System.out.print("| ");    
+                for (int col = 0 ; col < this.getBoardWidth() ; col ++) {
+                    //System.out.print(haetulostus(sudoku, mahdolliset, rivi, ruuturivi, ruutu )); 
+                    System.out.print(getOptionsOutput(row, boxRow, col));
+                    //if ((col+1)%this.getBoxWidth()==0) System.out.print("| ");
+                }
+                System.out.println(); 
+            }
+
+            if ((row+1)%this.boxHeigth == 0) {
+                System.out.print("+-");
+                for (int a = 0 ; a < this.getBoardWidth() ; a++) {
+                    for (int b = 0 ; b < this.getBoxWidth(); b++) {
+                        System.out.print("-");
+                    }
+                    System.out.print("+-");
+                }
+            } else {
+                System.out.print("+.");
+                for (int a = 0 ; a < this.getBoardWidth() ; a++) {
+                    for (int b = 0 ; b < this.getBoxWidth(); b++) {
+                        System.out.print(".");
+                    }
+                    System.out.print("+.");
+                }
+            }
+            System.out.println();
+            
+        }
+    } else {
+        System.out.println();
+        System.out.println(dumpBoard());
+        for (int i = 0; i < this.getBoardWidth(); i++) {
+            for (int j = 0; j < this.getBoardWidth(); j++) {
+                System.out.print(this.optionsList.get(i*this.getBoardWidth()+j));
+                if ((j+1)%this.getBoxWidth()==0) System.out.print("   ");
+            }
+            System.out.println();
+            if ((i+1)%this.getBoxHeigth()==0) System.out.println();
+        }
+    }
+    }
+    
+    public HashSet<String> getValueChars(HashSet<Integer> ts) {
+        HashSet<String> rv = new HashSet<String>();
+            for (int c : ts) {
+                rv.add(getCellValueChar(c));
+            }
+        return rv;
+
+    }
+
+    public int getBox(int cell) {
+        
+        return (cell/boardWidth)/boxHeigth*(boardWidth/boxWidth) + (cell%boardWidth)/boxWidth +1;
+        
     }
 
 }
