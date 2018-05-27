@@ -647,7 +647,7 @@ public class SudokuOptions {
                             board.removeOptions(i, boards.get(b).getCellValue(i));
                             returnValue = true;
                             count++;
-                            System.out.println("Exclusion"+ops+" remove option " + this.utilities.printCell(a,  board.getBoardWidth()) +" " 
+                            System.out.println("Exclusion"+ops+" remove option " + this.utilities.printCell(i,  board.getBoardWidth()) +" " 
                             + board.getCellValueChar(boards.get(b).getCellValue(i)));
                         }
                     }
@@ -865,52 +865,54 @@ public class SudokuOptions {
                 board.showOptions();
                 if (waitKey) utilities.pressAnykey("Press Enter to continue");
             }
-            System.out.print("*"+board.getFreeSlots().size());
-            if (!cont && board.getFreeSlots().size() > 0) {
-                reduceOptions = pointingPairs(board, true);
-                if (reduceOptions) System.out.println("Pointing pair(s) found");
-                cont = reduceOptions || cont;
-                reduceOptions = boxLineReduction(board, true);
-                if (reduceOptions) System.out.println("Box line reduction(s) found");
-                cont = reduceOptions || cont;
-                reduceOptions = nakedRow(board, a, z, true) ;
-                if (reduceOptions) System.out.println("Naked row(s) found");
-                cont = reduceOptions || cont;
-                reduceOptions = nakedColumn(board, a, z, true);
-                if (reduceOptions) System.out.println("Naked column(s) found");
-                cont = reduceOptions || cont;
-                reduceOptions = nakedBox(board, a, z, true); 
-                if (reduceOptions) System.out.println("Naked box(s) found");
-                cont = reduceOptions || cont;
-                reduceOptions = hiddenRow(board, a, z, true);
-                if (reduceOptions) System.out.println("Hidden row(s) found");
-                cont = reduceOptions || cont;
-                reduceOptions = hiddenColumn(board, a, z, true);
-                if (reduceOptions) System.out.println("Hidden column(s) found");
-                cont = reduceOptions || cont;
-                reduceOptions = hiddenBox(board, a, z, true); 
-                if (reduceOptions) System.out.println("Hidden box(s) found");
-                cont = reduceOptions || cont;
-                if (board.getFreeSlots().size() > board.getExLimit()) {
-                    if (!cont && useExtra) {
-                        a = 4; z = 5;
-                        useExtra = false; 
-                        System.out.print("+"); 
-                        cont = nakedRow(board, a, z, true) || cont;
-                        cont = nakedColumn(board, a, z, true) || cont;
-                        cont = nakedBox(board, a, z, true) || cont; 
-                        cont = hiddenRow(board, a, z, true) || cont;
-                        cont = hiddenColumn(board, a, z, true) || cont;
-                        cont = hiddenBox(board, a, z, true) || cont; 
-                        if (cont) System.out.print("+"); 
-                        a = 2; z = 3;
-                    }
-                    if (!cont) {
-                        int i = 2; 
-                        while (i < board.getBoardWidth() && !cont) {
-                            cont = exclusion(board, i) || cont;
-                            if (cont) System.out.print("Exclusion "+i+" reduction(s)"); 
-                            i++;
+            if (board.getBoxHeigth() > 1 && board.getBoxWidth() > 1) {
+                System.out.print("*"+board.getFreeSlots().size());
+                if (!cont && board.getFreeSlots().size() > 0) {
+                    reduceOptions = pointingPairs(board, true);
+                    if (reduceOptions) System.out.println("Pointing pair(s) found");
+                    cont = reduceOptions || cont;
+                    reduceOptions = boxLineReduction(board, true);
+                    if (reduceOptions) System.out.println("Box line reduction(s) found");
+                    cont = reduceOptions || cont;
+                    reduceOptions = nakedRow(board, a, z, true) ;
+                    if (reduceOptions) System.out.println("Naked row(s) found");
+                    cont = reduceOptions || cont;
+                    reduceOptions = nakedColumn(board, a, z, true);
+                    if (reduceOptions) System.out.println("Naked column(s) found");
+                    cont = reduceOptions || cont;
+                    reduceOptions = nakedBox(board, a, z, true); 
+                    if (reduceOptions) System.out.println("Naked box(s) found");
+                    cont = reduceOptions || cont;
+                    reduceOptions = hiddenRow(board, a, z, true);
+                    if (reduceOptions) System.out.println("Hidden row(s) found");
+                    cont = reduceOptions || cont;
+                    reduceOptions = hiddenColumn(board, a, z, true);
+                    if (reduceOptions) System.out.println("Hidden column(s) found");
+                    cont = reduceOptions || cont;
+                    reduceOptions = hiddenBox(board, a, z, true); 
+                    if (reduceOptions) System.out.println("Hidden box(s) found");
+                    cont = reduceOptions || cont;
+                    if (board.getFreeSlots().size() > board.getExLimit()) {
+                        if (!cont && useExtra) {
+                            a = 4; z = 5;
+                            useExtra = false; 
+                            System.out.print("+"); 
+                            cont = nakedRow(board, a, z, true) || cont;
+                            cont = nakedColumn(board, a, z, true) || cont;
+                            cont = nakedBox(board, a, z, true) || cont; 
+                            cont = hiddenRow(board, a, z, true) || cont;
+                            cont = hiddenColumn(board, a, z, true) || cont;
+                            cont = hiddenBox(board, a, z, true) || cont; 
+                            if (cont) System.out.print("+"); 
+                            a = 2; z = 3;
+                        }
+                        if (!cont) {
+                            int i = 2; 
+                            while (i < board.getBoardWidth() && !cont) {
+                                cont = exclusion(board, i) || cont;
+                                if (cont) System.out.print("Exclusion "+i+" reduction(s)"); 
+                                i++;
+                            }
                         }
                     }
                 }

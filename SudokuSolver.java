@@ -512,7 +512,7 @@ public class SudokuSolver {
         return returnValue;
     }
 
-        private boolean exclusion(SudokuBoard board, int ops) {
+    private boolean exclusion(SudokuBoard board, int ops) {
         if (ops > 3 && board.getBoardWidth() > 16) return false;
         System.out.print("e");
         boolean returnValue = false;
@@ -759,34 +759,36 @@ public class SudokuSolver {
             cont = false;
             while (findSingles(board)) {System.out.print("*");}
             System.out.print("*"+board.getFreeSlots().size());
-            if (!cont && board.getFreeSlots().size() > 0) {
-                cont = pointingPairs(board);
-                cont = boxLineReduction(board) || cont;
-                cont = nakedRow(board, a, z) || cont;
-                cont = nakedColumn(board, a, z) || cont;
-                cont = nakedBox(board, a, z) || cont; 
-                cont = hiddenRow(board, a, z) || cont;
-                cont = hiddenColumn(board, a, z) || cont;
-                cont = hiddenBox(board, a, z) || cont;
-                if (board.getFreeSlots().size() > board.getExLimit()) {
-                    if (!cont && useExtra) {
-                        a = 4; z = 5;
-                        useExtra = false; 
-                        System.out.print("+"); 
-                        cont = nakedRow(board, a, z) || cont;
-                        cont = nakedColumn(board, a, z) || cont;
-                        cont = nakedBox(board, a, z) || cont; 
-                        cont = hiddenRow(board, a, z) || cont;
-                        cont = hiddenColumn(board, a, z) || cont;
-                        cont = hiddenBox(board, a, z) || cont; 
-                        if (cont) System.out.print("+"); 
-                        a = 2; z = 3;
-                    }
-                    if (!cont) {
-                        int i = 2; 
-                        while (i < board.getBoardWidth() && !cont) {
-                            cont = exclusion(board, i) || cont;
-                            i++;
+            if (board.getBoxHeigth() > 1 && board.getBoxWidth() > 1) {
+                if (!cont && board.getFreeSlots().size() > 0) {
+                    cont = pointingPairs(board);
+                    cont = boxLineReduction(board) || cont;
+                    cont = nakedRow(board, a, z) || cont;
+                    cont = nakedColumn(board, a, z) || cont;
+                    cont = nakedBox(board, a, z) || cont; 
+                    cont = hiddenRow(board, a, z) || cont;
+                    cont = hiddenColumn(board, a, z) || cont;
+                    cont = hiddenBox(board, a, z) || cont;
+                    if (board.getFreeSlots().size() > board.getExLimit()) {
+                        if (!cont && useExtra) {
+                            a = 4; z = 5;
+                            useExtra = false; 
+                            System.out.print("+"); 
+                            cont = nakedRow(board, a, z) || cont;
+                            cont = nakedColumn(board, a, z) || cont;
+                            cont = nakedBox(board, a, z) || cont; 
+                            cont = hiddenRow(board, a, z) || cont;
+                            cont = hiddenColumn(board, a, z) || cont;
+                            cont = hiddenBox(board, a, z) || cont; 
+                            if (cont) System.out.print("+"); 
+                            a = 2; z = 3;
+                        }
+                        if (!cont) {
+                            int i = 2; 
+                            while (i < board.getBoardWidth() && !cont) {
+                                cont = exclusion(board, i) || cont;
+                                i++;
+                            }
                         }
                     }
                 }

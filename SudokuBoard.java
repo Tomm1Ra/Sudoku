@@ -659,9 +659,7 @@ public class SudokuBoard {
             for (int boxRow = 0 ; boxRow < this.getBoxHeigth() ; boxRow ++) {
                 System.out.print("| ");    
                 for (int col = 0 ; col < this.getBoardWidth() ; col ++) {
-                    //System.out.print(haetulostus(sudoku, mahdolliset, rivi, ruuturivi, ruutu )); 
                     System.out.print(getOptionsOutput(row, boxRow, col));
-                    //if ((col+1)%this.getBoxWidth()==0) System.out.print("| ");
                 }
                 System.out.println(); 
             }
