@@ -170,6 +170,10 @@ public class Overlap4SudokuSolver {
         System.out.println();
         overlapSolver.syncSudokus(boardA, boardB);
         boolean cont = true; 
+        boardA.setIsOverlap(true);
+        boardB.setIsOverlap(true);
+        boardA.setExLimit(81);
+        boardB.setExLimit(81);
         int fuse = 0;
         while ((boardA.getFreeSlots().size() + boardB.getFreeSlots().size()) > 0) {
             solverA.solve(boardA);

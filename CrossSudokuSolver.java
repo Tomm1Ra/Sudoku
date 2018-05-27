@@ -183,6 +183,16 @@ public class CrossSudokuSolver {
         System.out.println();
         crossSolver.syncSudokus(boardT, boardL, boardC, boardR, boardB);
         boolean cont = true; 
+        boardT.setIsOverlap(true);
+        boardL.setIsOverlap(true);
+        boardC.setIsOverlap(true);
+        boardR.setIsOverlap(true);
+        boardB.setIsOverlap(true);
+        boardT.setExLimit(81);
+        boardL.setExLimit(81);
+        boardC.setExLimit(81);
+        boardR.setExLimit(81);
+        boardB.setExLimit(81);
         while (cont) {
             cont = false;
             cont = crossSolver.syncSudokus(boardT, boardL, boardC, boardR, boardB) || cont;

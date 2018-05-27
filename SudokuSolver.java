@@ -754,7 +754,9 @@ public class SudokuSolver {
         boolean cont = true;
         boolean useExtra = true;
         int a = 2, z = 3;
-        if (board.getBoardWidth() > 9) board.setExLimit(70); else board.setExLimit(20);
+        if (!board.getIsOverlap()) {
+           if (board.getBoardWidth() > 9) board.setExLimit(70); else board.setExLimit(20);
+        }
         while (cont) {
             cont = false;
             while (findSingles(board)) {System.out.print("*");}

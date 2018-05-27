@@ -191,7 +191,18 @@ public class SamuraiSudokuSolver {
         samuraiSolver.printSamuraiSudoku(boardTL, boardTR, boardC, boardBL, boardBR);
         System.out.println();
         samuraiSolver.syncSudokus(boardTL, boardTR, boardC, boardBL, boardBR);
-        boolean cont = true; 
+        boolean cont = true;
+        boardTL.setIsOverlap(true);
+        boardTR.setIsOverlap(true);
+        boardBL.setIsOverlap(true);
+        boardBR.setIsOverlap(true);
+        boardC.setIsOverlap(true);
+        boardTL.setExLimit(81);
+        boardTR.setExLimit(81);
+        boardBL.setExLimit(81);
+        boardBR.setExLimit(81);
+        boardC.setExLimit(81);
+        
         while (cont) {
             cont = false;
             cont = samuraiSolver.syncSudokus(boardTL, boardTR, boardC, boardBL, boardBR) || cont;
